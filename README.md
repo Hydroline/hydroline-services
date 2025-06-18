@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/Hydroline/hydroline-services/main/logo/Hydroline_Logo_Normal.svg" width="200" />
 </p>
 
-<h1 align="center">Hydroline Services Platform</h1>
+<h1 align="center">Hydroline Services</h1>
 <p align="center">实用的、强大的、开源的 Minecraft 服务器聚合信息服务平台</p>
 
 > （2025 年 6 月）项目还处于初期开发验证阶段。主要服务城市建设类、轨道建设类的 Minecraft 服务器。
