@@ -1,0 +1,13 @@
+{
+  "name": "hydroline-services",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "admin"
+  ],
+  "author": "Hydroline",
+  "license": "AGPL-3.0-only",
+  "description": "A Useful, Powerful, and Open-Source Minecraft Server Information Integration Platform."
+}
