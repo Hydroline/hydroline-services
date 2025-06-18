@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/Hydroline/hydroline-services/main/logo/Hydroline_Logo_Normal.svg" width="200" />
 </p>
 
-<h2 align="center" style="font-size: 2rem; font-weight: 600;">Hydroline Services Platform</h2>
+<h1 align="center">Hydroline Services Platform</h1>
 
 <p align="center" style="color:rgb(62, 62, 62); font-size: 0.875rem;">实用的、强大的、开源的 Minecraft 服务器聚合信息服务平台</p>
 
@@ -10,7 +10,7 @@
 
 > （2025 年 6 月）项目还处于初期开发验证阶段。主要服务城市建设类、轨道建设类的 Minecraft 服务器。
 
-### Hydroline 是什么？
+## Hydroline 是什么？
 
 > Hydroline. A Useful, Powerful, and Open-Source Minecraft Server Information Integration Platform.
 
@@ -22,7 +22,7 @@ Hydroline Services（简称 Hydroline）由 Hydrlab 的开源项目组织 Hydrol
 
 这些对于 Web 开发（尤其是 B 端）习以为常的概念，对 Minecraft 服务器管理来说却几乎不存在，尽管两者有着极强的相关性。正因为此，Hydroline 的想法从此诞生。
 
-### 可以做什么？
+## 可以做什么？
 
 首先，需要明确的是：**Hydroline** 更接近一个**低代码平台**（如基于 SpringBoot 的若依），而非开箱即用的项目，而是需要开发者二次开发。
 
@@ -35,7 +35,7 @@ Hydroline Services（简称 Hydroline）由 Hydrlab 的开源项目组织 Hydrol
 
 此外，用户还可以根据自己的需求，基于已有的玩家账户系统二次开发，也可以基于已有的数据库扩展，如自行开发存储铁路信息、交通信息的数据功能；基于玩家账户系统设计统一的账户余额系统；开发虚拟出行系统。
 
-### 开发进度
+## 开发进度
 
 目前，Hydroline 启动于 2025 年 6 月底，初期的验证工作将在 7 月底前完成（最小验证原型），在开发初期阶段，对于具体的技术栈的支持不会被优先考虑，主要功能（玩家账户系统、SSO、OAuth、鉴权系统、统一 API 平台、周边平台接入）将会被优先考虑。
 
@@ -45,7 +45,7 @@ Hydroline Services（简称 Hydroline）由 Hydrlab 的开源项目组织 Hydrol
 | 第一开发阶段 | 2025 年 7 月底 - 2025 年 12 月底 | 统一 API 平台，Adapter、Conenctor 等适配器的开发，以及周边 Minecraft 项目的适配 |
 | 第二开发阶段 | 2025 年 12 月底 -                | 完善文档和项目结构、适配 Docker 等技术                                          |
 
-### 设计结构
+## 设计结构
 
 项目采用 NestJS 作为后端框架（Node.js），并使用 pnpm Monorepo 管理项目，ORM 为 Prisma，前端和后台前端采用 Vue 3 + TS 作为开发框架。在验证阶段，数据库采取 PostgreSQL。
 
