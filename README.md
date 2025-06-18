@@ -1,8 +1,10 @@
-<img style="max-width: 18rem; margin: 2rem auto; width: 100%; display: block;" src="https://raw.githubusercontent.com/Hydroline/hydroline-services/main/logo/Hydroline_Logo_Normal.svg" />
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Hydroline/hydroline-services/main/logo/Hydroline_Logo_Normal.svg" width="200" />
+</p>
 
-<div style="color:rgb(22, 22, 22); font-size: 2rem; font-weight: 600; text-align: center;">Hydroline Services Platform</div>
+<h2 align="center" style="font-size: 2rem; font-weight: 600;">Hydroline Services Platform</h2>
 
-<div style="color:rgb(62, 62, 62); font-size: 0.875rem; text-align: center;">实用的、强大的、开源的 Minecraft 服务器聚合信息服务平台</div>
+<p align="center" style="color:rgb(62, 62, 62); font-size: 0.875rem;">实用的、强大的、开源的 Minecraft 服务器聚合信息服务平台</p>
 
 ---
 
