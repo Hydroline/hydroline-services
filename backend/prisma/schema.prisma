@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(uuid()) @map("id")
+  username         String            @unique @map("username")
+  email            String?           @unique @map("email")
+  password         String            @map("password")
+  isActive         Boolean           @default(true) @map("is_active")
+  avatarUrl        String?           @map("avatar_url")
+  displayName      String?           @map("display_name")
+  bio              String?           @map("bio")
+  preferences      Json?             @map("preferences")
+  tokenVersion     Int               @default(0) @map("token_version")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  userRoles        UserRole[]
+  externalAccounts ExternalAccount[]
+  sessions         Session[]
+  auditLogs        AuditLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id              String           @id @default(uuid()) @map("id")
+  name            String           @unique @map("name")
+  description     String?          @map("description")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id              String           @id @default(uuid()) @map("id")
+  name            String           @unique @map("name")
+  description     String?          @map("description")
+  resource        String?          @map("resource")
+  action          String?          @map("action")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  roleId    String   @map("role_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid()) @map("id")
+  roleId       String     @map("role_id")
+  permissionId String     @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model ExternalAccount {
+  id             String   @id @default(uuid()) @map("id")
+  provider       String   @map("provider")
+  providerUserId String   @map("provider_user_id")
+  userId         String   @map("user_id")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken    String?  @map("access_token")
+  refreshToken   String?  @map("refresh_token")
+  metadata       Json?    @map("metadata")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([provider, providerUserId])
+  @@map("external_accounts")
+}
+
+model Session {
+  id         String   @id @default(uuid()) @map("id")
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenId    String   @unique @map("token_id")
+  deviceInfo String?  @map("device_info")
+  ipAddress  String?  @map("ip_address")
+  isActive   Boolean  @default(true) @map("is_active")
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("sessions")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String   @map("action")
+  resource  String?  @map("resource")
+  detail    Json?    @map("detail")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}
