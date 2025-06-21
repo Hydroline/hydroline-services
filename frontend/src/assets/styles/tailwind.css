@@ -1,11 +1,13 @@
 @import "tailwindcss";
+@config "../../../tailwind.config.ts";
+
 @import "tw-animate-css";
 
 @layer base {
   * {
     box-sizing: border-box;
   }
-  
+
   body {
     margin: 0;
     padding: 0;
@@ -16,7 +18,6 @@
   }
 }
 
-/* 为了向后兼容，保留一些必要的CSS变量 */
 :root {
   --radius: 0.625rem;
 }

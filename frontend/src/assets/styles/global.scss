@@ -1,5 +1,20 @@
 @use '@/assets/styles/media_screen.scss' as media;
 
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'MiSans Latin';
+  src: url('../fonts/MiSans_Latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../fonts/JetBrains_Mono.woff2') format('woff2');
+}
+
 :root {
   --font-family: "Inter", "Helvetica Neue", "Helvetica", "Roboto", "BlinkMacSystemFont", "MiSans", "HarmonyOS Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   --color-primary__h: 211;
@@ -83,7 +98,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background: var(--color-surface-0);
+  background: radial-gradient(ellipse at left bottom, #fff 0% 25%, var(--color-surface-0) 40% 100%);
   height: 100vh;
 }
 

@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import tailwindcssAnimate from "tailwindcss-animate"
+
 export default {
   darkMode: ["class"],
   content: [
@@ -9,16 +10,8 @@ export default {
   ],
   prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
-        // 直接使用你的 primary color 系统
         primary: {
           DEFAULT: 'hsl(211, 84%, 49%)',
           50: 'hsl(211, 84%, 95%)',
@@ -33,26 +26,21 @@ export default {
           900: 'hsl(211, 84%, 10%)',
           foreground: 'hsl(211, 3%, 98%)',
         },
-        // 使用你的 surface 系统
         surface: {
           0: 'hsl(211, 3%, 98%)',
-          1: 'hsl(211, 3%, 95%)', 
+          1: 'hsl(211, 3%, 95%)',
           2: 'hsl(211, 10%, 93%)',
           3: 'hsl(211, 10%, 85%)',
           4: 'hsl(211, 10%, 74%)',
         },
-        // 文字颜色
         text: {
           DEFAULT: 'hsl(211, 29%, 24%)',
           emphasized: 'hsl(211, 85%, 5%)',
-          subtle: 'hsl(211, 30%, 35%)', 
+          subtle: 'hsl(211, 30%, 35%)',
           weaken: 'hsl(211, 15%, 60%)',
         },
-        // 状态颜色
         success: '#00ba68',
         destructive: '#c73413',
-        
-        // shadcn-vue 兼容颜色
         border: 'hsl(211, 5%, 90%)',
         input: 'hsl(211, 5%, 90%)',
         ring: 'hsl(211, 84%, 49%)',
@@ -100,5 +88,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } 

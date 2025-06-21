@@ -38,6 +38,9 @@ importers:
       '@types/heatmap.js':
         specifier: ^2.0.41
         version: 2.0.41
+      '@vueuse/core':
+        specifier: ^13.4.0
+        version: 13.4.0(vue@3.5.14(typescript@5.8.3))
       ant-design-vue:
         specifier: ^4.2.6
         version: 4.2.6(vue@3.5.14(typescript@5.8.3))
@@ -122,6 +125,9 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@4.1.7)
       tw-animate-css:
         specifier: ^1.3.4
         version: 1.3.4
@@ -1402,11 +1408,24 @@ packages:
   '@vueuse/core@12.8.2':
     resolution: {integrity: sha512-HbvCmZdzAu3VGi/pWYm5Ut+Kd9mn1ZHnn4L5G8kOQTPs/IwIAmJoBrmYk2ckLArgMXZj0AW3n5CAejLUO+PhdQ==}
 
+  '@vueuse/core@13.4.0':
+    resolution: {integrity: sha512-OnK7zW3bTq/QclEk17+vDFN3tuAm8ONb9zQUIHrYQkkFesu3WeGUx/3YzpEp+ly53IfDAT9rsYXgGW6piNZC5w==}
+    peerDependencies:
+      vue: ^3.5.0
+
   '@vueuse/metadata@12.8.2':
     resolution: {integrity: sha512-rAyLGEuoBJ/Il5AmFHiziCPdQzRt88VxR+Y/A/QhJ1EWtWqPBBAxTAFaSkviwEuOEZNtW8pvkPgoCZQ+HxqW1A==}
 
+  '@vueuse/metadata@13.4.0':
+    resolution: {integrity: sha512-CPDQ/IgOeWbqItg1c/pS+Ulum63MNbpJ4eecjFJqgD/JUCJ822zLfpw6M9HzSvL6wbzMieOtIAW/H8deQASKHg==}
+
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
+
+  '@vueuse/shared@13.4.0':
+    resolution: {integrity: sha512-+AxuKbw8R1gYy5T21V5yhadeNM7rJqb4cPaRI9DdGnnNl3uqXh+unvQ3uCaA2DjYLbNr1+l7ht/B4qEsRegX6A==}
+    peerDependencies:
+      vue: ^3.5.0
 
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -2255,7 +2274,7 @@ packages:
     engines: {node: '>= 4'}
 
   image-size@0.5.5:
-    resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==}
+    resolution: {integrity: sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=}
     engines: {node: '>=0.10.0'}
     hasBin: true
 
@@ -3414,6 +3433,11 @@ packages:
 
   tailwind-merge@3.3.1:
     resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
+
+  tailwindcss-animate@1.0.7:
+    resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
 
   tailwindcss@4.1.7:
     resolution: {integrity: sha512-kr1o/ErIdNhTz8uzAYL7TpaUuzKIE6QPQ4qmSdxnoX/lo+5wmUHQA6h3L5yIqEImSRnAAURDirLu/BgiXGPAhg==}
@@ -5693,13 +5717,26 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@vueuse/core@13.4.0(vue@3.5.14(typescript@5.8.3))':
+    dependencies:
+      '@types/web-bluetooth': 0.0.21
+      '@vueuse/metadata': 13.4.0
+      '@vueuse/shared': 13.4.0(vue@3.5.14(typescript@5.8.3))
+      vue: 3.5.14(typescript@5.8.3)
+
   '@vueuse/metadata@12.8.2': {}
+
+  '@vueuse/metadata@13.4.0': {}
 
   '@vueuse/shared@12.8.2(typescript@5.8.3)':
     dependencies:
       vue: 3.5.14(typescript@5.8.3)
     transitivePeerDependencies:
       - typescript
+
+  '@vueuse/shared@13.4.0(vue@3.5.14(typescript@5.8.3))':
+    dependencies:
+      vue: 3.5.14(typescript@5.8.3)
 
   '@yarnpkg/lockfile@1.1.0': {}
 
@@ -7904,6 +7941,10 @@ snapshots:
       '@pkgr/core': 0.2.4
 
   tailwind-merge@3.3.1: {}
+
+  tailwindcss-animate@1.0.7(tailwindcss@4.1.7):
+    dependencies:
+      tailwindcss: 4.1.7
 
   tailwindcss@4.1.7: {}
 

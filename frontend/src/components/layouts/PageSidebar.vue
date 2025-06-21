@@ -1,6 +1,6 @@
 <template>
-  <aside class="page-sidebar px-1 py-3">
-    <div class="page-sidebar-wrapper">
+  <aside class="page-sidebar px-1.5 py-3.5 h-fit my-auto bg-white border-">
+    <div class="page-sidebar-wrapper flex flex-col gap-2">
       <div class="page-sidebar-item">
         <RouterLink to="/">
           <div class="material-icons !block select-none">dashboard</div>
@@ -24,9 +24,18 @@
 
 <style lang="scss" scoped>
 .page-sidebar {
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  background: var(--color-surface-0);
-  box-shadow: 0 0 32px var(--border-color-base--darker);
+  border-top-right-radius: 1.375rem;
+  border-bottom-right-radius: 1.375rem;
+  box-shadow: 0 0 48px var(--border-color-base);
+
+  .page-sidebar-wrapper {
+    padding-right: 0.25rem;
+  }
+
+  .page-sidebar-item {
+    a {
+      color: v-bind(text-text-subtle);
+    }
+  }
 }
 </style>
