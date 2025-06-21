@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  { path: '/', name: 'Live', component: () => import('../views/HomeView.vue') },
+  { path: '/', name: 'Dashboard', component: () => import('../views/DashboardView.vue'), meta: { title: '仪表盘' } },
 ]
 
 const router = createRouter({
