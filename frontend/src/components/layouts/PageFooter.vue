@@ -5,7 +5,7 @@ import HydrolineLogo from '@/assets/logo/Hydroline_Logo_Normal.svg'
 
 <template>
   <footer
-    class="page-footer px-16 py-5 text-text-subtle text-sm bg-surface-0 border-t border-1 border-[var(--border-color-base--lighter)] flex justify-between items-center"
+    class="page-footer px-16 py-8 text-text-subtle text-sm bg-surface-0 border-t border-1 border-[var(--border-color-base--lighter)] flex justify-between items-center"
   >
     <div class="page-footer-mark flex items-center select-none">
       <HydrolineLogo class="h-12" />
