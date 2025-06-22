@@ -1,46 +1,39 @@
-// 将你的颜色系统转换为 SCSS 变量，方便直接使用
+@import './media_screen.scss';
+
 $primary-h: 211;
 $primary-s: 84%;
 $primary-l: 49%;
 
-// 主色调
 $color-primary: hsl($primary-h, $primary-s, $primary-l);
 $color-primary-hover: hsl($primary-h, $primary-s, calc($primary-l * 1.2));
 $color-primary-active: hsl($primary-h, $primary-s, calc($primary-l * 0.8));
 
-// 表面颜色
 $color-surface-0: hsl($primary-h, 3%, 98%);
 $color-surface-1: hsl($primary-h, 3%, 95%);
 $color-surface-2: hsl($primary-h, 10%, 93%);
 $color-surface-3: hsl($primary-h, 10%, 85%);
 $color-surface-4: hsl($primary-h, 10%, 74%);
 
-// 文字颜色
 $color-text: hsl($primary-h, 29%, 24%);
 $color-text-emphasized: hsl($primary-h, 85%, 5%);
 $color-text-subtle: hsl($primary-h, 30%, 35%);
 $color-text-weaken: hsl($primary-h, 15%, 60%);
 
-// 状态颜色
 $success-color: #00ba68;
 $failed-color: #c73413;
 
-// 边框颜色
 $border-color-base: rgba(0, 0, 0, 0.05);
 $border-color-base-lighter: rgba(0, 0, 0, 0.02);
 $border-color-base-darker: rgba(0, 0, 0, 0.08);
 $border-color-input: rgba(0, 0, 0, 0.05);
 $border-color-input-hover: rgba(0, 0, 0, 0.4);
 
-// 背景颜色
 $background-color-primary-hover: hsl($primary-h, $primary-s, 95%);
 $background-color-primary-active: hsl($primary-h, $primary-s, 90%);
 
-// 阴影
 $box-shadow-diverge: 0 10px 20px $border-color-base-lighter;
 
-// 字体
-$font-family: "Inter", "Helvetica Neue", "Helvetica", "Roboto", "BlinkMacSystemFont", "MiSans", "HarmonyOS Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
-
-// 导入媒体查询混入
-@import './media_screen.scss'; 
+$font-family:
+  'Inter', 'Helvetica Neue', 'Helvetica', 'Roboto', 'BlinkMacSystemFont',
+  'MiSans', 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
+  'Microsoft YaHei', '微软雅黑', Arial, sans-serif;

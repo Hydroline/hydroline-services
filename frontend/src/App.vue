@@ -6,14 +6,10 @@ import PageSidebar from './components/layouts/PageSidebar.vue'
 </script>
 
 <template>
-  <div class="main flex flex-col h-full">
+  <div class="main flex flex-col h-full min-h-[inherit]">
+    <PageSidebar />
     <PageHeader />
-    <div class="main-container flex flex-1 h-full">
-      <PageSidebar/>
-      <div class="content-wrapper overflow-y-auto w-full">
-        <PageContent />
-        <PageFooter />
-      </div>
-    </div>
+    <PageContent />
+    <PageFooter />
   </div>
 </template>

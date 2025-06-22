@@ -8,8 +8,8 @@ import router from './router'
 import utcPlugin from 'dayjs/plugin/utc'
 import 'dayjs/locale/zh-cn'
 
+import './assets/styles/main.scss'
 import './assets/styles/tailwind.css'
-import './assets/styles/global.scss'
 import 'material-icons/iconfont/material-icons.css'
 
 dayjs.locale('zh-cn')

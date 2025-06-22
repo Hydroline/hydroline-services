@@ -41,7 +41,7 @@ onUnmounted(() => {
 
 <template>
   <header
-    class="page-header grid grid-cols-[1fr_auto_1fr] items-center px-8 py-2.5 text-text-subtle"
+    class="page-header sticky top-0 left-0 right-0 h-fit grid grid-cols-[1fr_auto_1fr] items-center px-14 py-3 text-text-subtle"
   >
     <div class="page-header-time">
       {{ currentTime.format('YYYY/M/D H:mm ') }}
