@@ -41,18 +41,18 @@ onUnmounted(() => {
 
 <template>
   <header
-    class="page-header sticky top-0 left-0 right-0 h-fit grid grid-cols-[1fr_1fr] items-center px-14 py-3 text-text-subtle"
+    class="page-header sticky top-0 left-0 right-0 z-20 h-fit grid grid-cols-[1fr_auto_1fr] items-center px-12 py-3 text-text-subtle backdrop-blur-lg border-b border-1 border-[var(--border-color-base)]"
   >
     <div class="page-header-time">
       {{ currentTime.format('YYYY/M/D H:mm ') }}
     </div>
-    <!-- <div
+    <div
       class="page-header-router font-semibold text-text-emphasized tracking-widest"
     >
       {{ $route.meta.title }}
-    </div> -->
+    </div>
     <div
-      class="page-header-user text-right flex justify-end items-center gap-3"
+      class="page-header-user text-right flex justify-end items-center gap-4"
     >
       <div class="page-header-user__notices flex items-center gap-2">
         <div
@@ -66,8 +66,8 @@ onUnmounted(() => {
           mail
         </div>
       </div>
-      <div class="page-header-user__info flex items-center gap-1">
-        <div class="page-header-user__name">Admin</div>
+      <div class="page-header-user__info flex items-center gap-2">
+        <div class="page-header-user__name font-medium">Admin</div>
         <div class="page-header-user__avatar">
           <Avatar>
             <AvatarFallback>测</AvatarFallback>

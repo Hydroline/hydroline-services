@@ -49,7 +49,7 @@
       padding: 0.25rem;
 
       a {
-        color: var(--color-text--weaken);
+        color: var(--color-surface-3);
       }
     }
   }
