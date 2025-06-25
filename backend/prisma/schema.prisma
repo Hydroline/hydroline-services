@@ -7,11 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 用户基础表 - 平台账户系统
 model User {
   id               String            @id @default(uuid()) @map("id")
   username         String            @unique @map("username")
   email            String?           @unique @map("email")
-  password         String            @map("password")
+  password         String?           @map("password") // 可为空，支持纯OAuth用户
   isActive         Boolean           @default(true) @map("is_active")
   avatarUrl        String?           @map("avatar_url")
   displayName      String?           @map("display_name")
@@ -20,43 +21,57 @@ model User {
   tokenVersion     Int               @default(0) @map("token_version")
   createdAt        DateTime          @default(now()) @map("created_at")
   updatedAt        DateTime          @updatedAt @map("updated_at")
+  
+  // 关联关系
   userRoles        UserRole[]
   externalAccounts ExternalAccount[]
   sessions         Session[]
   auditLogs        AuditLog[]
+  minecraftPlayers MinecraftPlayer[] // 关联的MC玩家
 
   @@map("users")
 }
 
+// 角色表
 model Role {
   id              String           @id @default(uuid()) @map("id")
   name            String           @unique @map("name")
   description     String?          @map("description")
+  isSystem        Boolean          @default(false) @map("is_system") // 系统角色不可删除
+  priority        Int              @default(0) @map("priority") // 角色优先级
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  
   userRoles       UserRole[]
   rolePermissions RolePermission[]
 
   @@map("roles")
 }
 
+// 权限表
 model Permission {
   id              String           @id @default(uuid()) @map("id")
   name            String           @unique @map("name")
   description     String?          @map("description")
-  resource        String?          @map("resource")
-  action          String?          @map("action")
+  resource        String           @map("resource") // 资源类型：user, player, server, oauth等
+  action          String           @map("action") // 操作类型：read, write, delete, admin等
+  isSystem        Boolean          @default(false) @map("is_system") // 系统权限不可删除
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  
   rolePermissions RolePermission[]
 
+  @@unique([resource, action])
   @@map("permissions")
 }
 
+// 用户角色关联表
 model UserRole {
   id        String   @id @default(uuid()) @map("id")
   userId    String   @map("user_id")
   roleId    String   @map("role_id")
+  assignedBy String? @map("assigned_by") // 分配者ID
+  expiresAt DateTime? @map("expires_at") // 角色过期时间
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
@@ -65,6 +80,7 @@ model UserRole {
   @@map("user_roles")
 }
 
+// 角色权限关联表
 model RolePermission {
   id           String     @id @default(uuid()) @map("id")
   roleId       String     @map("role_id")
@@ -77,15 +93,17 @@ model RolePermission {
   @@map("role_permissions")
 }
 
+// 外部账户关联表（微软、QQ、微信等）
 model ExternalAccount {
   id             String   @id @default(uuid()) @map("id")
-  provider       String   @map("provider")
+  provider       String   @map("provider") // microsoft, qq, wechat, discord等
   providerUserId String   @map("provider_user_id")
   userId         String   @map("user_id")
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken    String?  @map("access_token")
   refreshToken   String?  @map("refresh_token")
-  metadata       Json?    @map("metadata")
+  metadata       Json?    @map("metadata") // 存储额外信息，如昵称、头像等
+  isVerified     Boolean  @default(false) @map("is_verified")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -93,6 +111,7 @@ model ExternalAccount {
   @@map("external_accounts")
 }
 
+// 会话表
 model Session {
   id         String   @id @default(uuid()) @map("id")
   userId     String   @map("user_id")
@@ -108,16 +127,216 @@ model Session {
   @@map("sessions")
 }
 
+// OAuth客户端表 - 对外提供OAuth服务
+model OAuthClient {
+  id           String   @id @default(uuid()) @map("id")
+  name         String   @map("name")
+  clientId     String   @unique @map("client_id")
+  clientSecret String   @map("client_secret")
+  redirectUris String[] @map("redirect_uris")
+  scopes       String[] @map("scopes")
+  isActive     Boolean  @default(true) @map("is_active")
+  description  String?  @map("description")
+  logoUrl      String?  @map("logo_url")
+  websiteUrl   String?  @map("website_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  authCodes    OAuthAuthCode[]
+  accessTokens OAuthAccessToken[]
+
+  @@map("oauth_clients")
+}
+
+// OAuth授权码表
+model OAuthAuthCode {
+  id         String      @id @default(uuid()) @map("id")
+  code       String      @unique @map("code")
+  clientId   String      @map("client_id")
+  userId     String      @map("user_id")
+  scopes     String[]    @map("scopes")
+  redirectUri String     @map("redirect_uri")
+  expiresAt  DateTime    @map("expires_at")
+  isUsed     Boolean     @default(false) @map("is_used")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  
+  client     OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("oauth_auth_codes")
+}
+
+// OAuth访问令牌表
+model OAuthAccessToken {
+  id           String      @id @default(uuid()) @map("id")
+  accessToken  String      @unique @map("access_token")
+  refreshToken String?     @unique @map("refresh_token")
+  clientId     String      @map("client_id")
+  userId       String      @map("user_id")
+  scopes       String[]    @map("scopes")
+  expiresAt    DateTime    @map("expires_at")
+  isRevoked    Boolean     @default(false) @map("is_revoked")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  
+  client       OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("oauth_access_tokens")
+}
+
+// ========== Minecraft玩家管理系统 ==========
+
+// 玩家主表
+model MinecraftPlayer {
+  id           String        @id @default(uuid()) @map("id")
+  playerId     String        @unique @map("player_id") // 主要的Minecraft ID (UUID)
+  playerNick   String        @map("player_nick") // 玩家昵称
+  userId       String?       @map("user_id") // 关联的平台用户ID，可为空
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  joinedAt     DateTime      @default(now()) @map("joined_at") // 加入时间
+  lastSeenAt   DateTime?     @map("last_seen_at") // 最后在线时间
+  statusId     String?       @map("status_id") // 玩家状态ID（关联状态表）
+  typeId       String?       @map("type_id") // 玩家类型ID（关联类型表）
+  isActive     Boolean       @default(true) @map("is_active")
+  metadata     Json?         @map("metadata") // 扩展字段
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  
+  // 关联关系
+  status            PlayerStatus?           @relation(fields: [statusId], references: [id])
+  type              PlayerType?             @relation(fields: [typeId], references: [id])
+  contactInfos      PlayerContactInfo[]
+  alternativeIds    PlayerAlternativeId[]
+  alternativeNicks  PlayerAlternativeNick[]
+  auditLogs         PlayerAuditLog[]
+
+  @@map("minecraft_players")
+}
+
+// 玩家状态表（用户可自定义）
+model PlayerStatus {
+  id          String            @id @default(uuid()) @map("id")
+  name        String            @unique @map("name") // 状态名称：正常、离开、禁言、封禁等
+  description String?           @map("description")
+  color       String?           @map("color") // 状态颜色标识
+  isDefault   Boolean           @default(false) @map("is_default") // 是否为默认状态
+  isSystem    Boolean           @default(false) @map("is_system") // 系统状态不可删除
+  sortOrder   Int               @default(0) @map("sort_order") // 排序
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  
+  players     MinecraftPlayer[]
+
+  @@map("player_statuses")
+}
+
+// 玩家类型表（用户可自定义）
+model PlayerType {
+  id          String            @id @default(uuid()) @map("id")
+  name        String            @unique @map("name") // 类型名称：普通玩家、管理员、VIP等
+  description String?           @map("description")
+  permissions Json?             @map("permissions") // 类型权限配置
+  isDefault   Boolean           @default(false) @map("is_default")
+  isSystem    Boolean           @default(false) @map("is_system")
+  sortOrder   Int               @default(0) @map("sort_order")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  
+  players     MinecraftPlayer[]
+
+  @@map("player_types")
+}
+
+// 玩家联系信息表
+model PlayerContactInfo {
+  id             String          @id @default(uuid()) @map("id")
+  playerId       String          @map("player_id")
+  player         MinecraftPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  contactType    String          @map("contact_type") // qq, wechat, bilibili, twitter, discord等
+  contactValue   String          @map("contact_value") // 联系方式的值
+  isVerified     Boolean         @default(false) @map("is_verified") // 是否已验证
+  isPrimary      Boolean         @default(false) @map("is_primary") // 是否为主要联系方式
+  note           String?         @map("note") // 备注
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@unique([playerId, contactType, contactValue])
+  @@map("player_contact_infos")
+}
+
+// 玩家其他Minecraft ID表（小号、备用号等）
+model PlayerAlternativeId {
+  id         String          @id @default(uuid()) @map("id")
+  playerId   String          @map("player_id")
+  player     MinecraftPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  altId      String          @map("alt_id") // 替代的Minecraft ID
+  altNick    String?         @map("alt_nick") // 该ID对应的昵称
+  note       String?         @map("note") // 备注说明
+  isVerified Boolean         @default(false) @map("is_verified")
+  createdAt  DateTime        @default(now()) @map("created_at")
+  updatedAt  DateTime        @updatedAt @map("updated_at")
+
+  @@unique([playerId, altId])
+  @@map("player_alternative_ids")
+}
+
+// 玩家其他昵称表
+model PlayerAlternativeNick {
+  id        String          @id @default(uuid()) @map("id")
+  playerId  String          @map("player_id")
+  player    MinecraftPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  altNick   String          @map("alt_nick") // 其他昵称
+  context   String?         @map("context") // 使用场景：游戏内、论坛、QQ群等
+  note      String?         @map("note") // 备注
+  isActive  Boolean         @default(true) @map("is_active")
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@unique([playerId, altNick])
+  @@map("player_alternative_nicks")
+}
+
+// 玩家操作审计日志
+model PlayerAuditLog {
+  id         String          @id @default(uuid()) @map("id")
+  playerId   String          @map("player_id")
+  player     MinecraftPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  operatorId String?         @map("operator_id") // 操作者ID
+  action     String          @map("action") // 操作类型
+  oldValue   Json?           @map("old_value") // 修改前的值
+  newValue   Json?           @map("new_value") // 修改后的值
+  reason     String?         @map("reason") // 操作原因
+  ipAddress  String?         @map("ip_address")
+  userAgent  String?         @map("user_agent")
+  createdAt  DateTime        @default(now()) @map("created_at")
+
+  @@map("player_audit_logs")
+}
+
+// 系统审计日志（全局操作）
 model AuditLog {
   id        String   @id @default(uuid()) @map("id")
   userId    String?  @map("user_id")
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  action    String   @map("action")
-  resource  String?  @map("resource")
-  detail    Json?    @map("detail")
+  action    String   @map("action") // 操作类型
+  resource  String?  @map("resource") // 操作的资源类型
+  resourceId String? @map("resource_id") // 操作的资源ID
+  detail    Json?    @map("detail") // 详细信息
   ipAddress String?  @map("ip_address")
   userAgent String?  @map("user_agent")
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("audit_logs")
+}
+
+// 系统配置表
+model SystemConfig {
+  id        String   @id @default(uuid()) @map("id")
+  key       String   @unique @map("key") // 配置键
+  value     Json     @map("value") // 配置值
+  category  String   @default("general") @map("category") // 配置分类
+  isSystem  Boolean  @default(false) @map("is_system") // 系统配置不可删除
+  note      String?  @map("note") // 配置说明
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
 }

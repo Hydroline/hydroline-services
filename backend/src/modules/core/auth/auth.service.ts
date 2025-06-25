@@ -2,18 +2,25 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
 import config from '../../../config';
+import { PlayerService } from '../../player/player.service';
+import { SSOService } from './sso.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    @Inject(forwardRef(() => PlayerService))
+    private readonly playerService: PlayerService,
+    private readonly ssoService: SSOService,
   ) {}
 
   async validateUserById(userId: string): Promise<any> {
@@ -71,34 +78,36 @@ export class AuthService {
     return user;
   }
 
+  /**
+   * 验证用户登录
+   */
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          { username, isActive: true },
-          { email: username, isActive: true },
-        ],
-      },
-      include: {
-        userRoles: {
-          include: {
-            role: true,
-          },
-        },
-      },
-    });
+    try {
+      const user = await this.playerService.findByUsername(username);
+      if (!user) {
+        return null;
+      }
 
-    if (!user) {
-      throw new UnauthorizedException('用户名或密码错误');
+      if (!user.password) {
+        throw new BadRequestException('该账户未设置密码，请使用第三方登录');
+      }
+
+      const isPasswordValid = await this.playerService.validatePassword(password, user.password);
+      if (!isPasswordValid) {
+        return null;
+      }
+
+      if (!user.isActive) {
+        throw new BadRequestException('账户已被禁用');
+      }
+
+      // 移除密码字段，返回用户信息
+      const { password: _, ...result } = user;
+      return result;
+    } catch (error) {
+      console.error('User validation error:', error);
+      throw error;
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('用户名或密码错误');
-    }
-
-    const { password: _, ...result } = user;
-    return result;
   }
 
   async login(user: any, deviceInfo?: string, ipAddress?: string) {

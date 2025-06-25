@@ -7,13 +7,24 @@ import config from '../../../config';
 @Injectable()
 export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
   constructor(private readonly authService: AuthService) {
+    const microsoftConfig = config.oauth.providers.microsoft;
+    
+    // 检查Microsoft OAuth是否已启用和配置
+    if (!microsoftConfig.enabled) {
+      throw new Error('Microsoft OAuth is not enabled. Please set OAUTH_MICROSOFT_ENABLED=true in your configuration.');
+    }
+
+    if (!microsoftConfig.clientId || !microsoftConfig.clientSecret) {
+      throw new Error('Microsoft OAuth credentials are not configured. Please set OAUTH_MICROSOFT_CLIENT_ID and OAUTH_MICROSOFT_CLIENT_SECRET.');
+    }
+
     super({
       authorizationURL:
         'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
       tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-      clientID: config.oauth.microsoft.clientId,
-      clientSecret: config.oauth.microsoft.clientSecret,
-      callbackURL: config.oauth.microsoft.callbackURL,
+      clientID: microsoftConfig.clientId,
+      clientSecret: microsoftConfig.clientSecret,
+      callbackURL: microsoftConfig.callbackURL,
       scope: ['user.read'],
       passReqToCallback: true,
     });

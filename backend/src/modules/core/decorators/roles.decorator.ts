@@ -8,3 +8,6 @@ export const ROLES_KEY = 'roles';
  * @param roles 允许访问的角色数组
  */
 export const Roles = (...roles: string[]) => SetMetadata(ROLES_KEY, roles);
+
+export const PERMISSIONS_KEY = 'permissions';
+export const Permissions = (...permissions: string[]) => SetMetadata(PERMISSIONS_KEY, permissions);

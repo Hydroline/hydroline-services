@@ -22,8 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SSOService } from './sso.service';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { LoginDto, RefreshTokenDto } from './dto';
 import { CurrentUser } from '../decorators/user.decorator';
 
 @ApiTags('认证')
@@ -51,7 +50,7 @@ export class AuthController {
     return this.authService.login(user, userAgent, ip);
   }
 
-  @ApiOperation({ summary: '刷新令牌' })
+  @ApiOperation({ summary: '刷新访问令牌' })
   @ApiResponse({ status: 200, description: '刷新成功' })
   @ApiResponse({ status: 400, description: '无效的刷新令牌' })
   @HttpCode(HttpStatus.OK)

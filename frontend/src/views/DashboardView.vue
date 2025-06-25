@@ -1,6 +1,6 @@
 <template>
   <div class="page-dashboard my-8 h-full">
-    <div class="page-item w-full h-54 relative bg-white rounded-2xl overflow-hidden shadow-[0_0_32px_var(--border-color-base)]">
+    <div class="page-item w-full h-54 relative bg-white rounded-2xl overflow-hidden shadow-[0_16px_64px_var(--border-color-base)]">
       <div class="page-item-background h-[inherit]">
         <img class="block w-full h-full object-cover select-none" src="@/assets/images/image_home_background_240730.webp" />
       </div>

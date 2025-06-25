@@ -47,13 +47,31 @@ export class SSOService {
    */
   generateSSORedirectUrl(user: User, targetSystem: string): string {
     const token = this.generateSSOToken(user);
-    const redirectMap = {
-      wiki: config.sso.wiki,
-      forum: config.sso.forum,
-      'media-wiki': config.sso.mediaWiki,
-    };
-
-    const baseUrl = redirectMap[targetSystem] || redirectMap.wiki;
-    return `${baseUrl}?token=${token}`;
+    
+    // 检查SSO是否启用
+    if (!config.sso.enabled) {
+      throw new Error('SSO is not enabled. Please set SSO_ENABLED=true in your configuration.');
+    }
+    
+    let clientConfig;
+    switch (targetSystem) {
+      case 'wiki':
+        clientConfig = config.sso.clients.wiki;
+        break;
+      case 'forum':
+        clientConfig = config.sso.clients.forum;
+        break;
+      case 'media-wiki':
+        clientConfig = config.sso.clients.mediawiki;
+        break;
+      default:
+        clientConfig = config.sso.clients.wiki; // 默认使用wiki
+    }
+    
+    if (!clientConfig.callbackUrl) {
+      throw new Error(`SSO client '${targetSystem}' callback URL is not configured.`);
+    }
+    
+    return `${clientConfig.callbackUrl}?token=${token}`;
   }
 }
