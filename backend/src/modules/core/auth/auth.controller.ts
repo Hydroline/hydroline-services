@@ -68,7 +68,7 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
-    @Headers('user-agent') userAgent?: string,
+    @Headers('user-agent') userAgent: string,
   ) {
     // 输入验证
     if (!loginDto.username?.trim() || !loginDto.password?.trim()) {
