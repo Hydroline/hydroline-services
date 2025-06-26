@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PlayerModule } from './modules/player/player.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { RbacModule } from './modules/rbac/rbac.module';
+import { MinecraftModule } from './modules/minecraft/minecraft.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RbacModule } from './modules/rbac/rbac.module';
     PlayerModule,
     AuditModule,
     RbacModule,
+    MinecraftModule,
   ],
   controllers: [AppController],
   providers: [AppService],

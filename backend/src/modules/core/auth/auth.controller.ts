@@ -133,16 +133,16 @@ export class AuthController {
   @SuccessMessage('退出登录成功')
   async logout(@CurrentUser() user, @Req() req) {
     try {
-      const token = req.headers.authorization?.split(' ')[1];
-      if (token) {
-        const payload = JSON.parse(
-          Buffer.from(token.split('.')[1], 'base64').toString(),
-        );
-        if (payload.jti) {
-          await this.authService.revokeSession(payload.jti, user.id);
-        }
+    const token = req.headers.authorization?.split(' ')[1];
+    if (token) {
+      const payload = JSON.parse(
+        Buffer.from(token.split('.')[1], 'base64').toString(),
+      );
+      if (payload.jti) {
+        await this.authService.revokeSession(payload.jti, user.id);
       }
-      return { message: '已成功退出登录' };
+    }
+    return { message: '已成功退出登录' };
     } catch (error) {
       return { message: '已成功退出登录' };
     }
