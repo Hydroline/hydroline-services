@@ -19,16 +19,14 @@ import {
 } from '@nestjs/swagger';
 import { PlayerStatusService } from './player-status.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RbacGuard } from '../core/guards';
-import { Permissions, SuccessMessage } from '../core/decorators';
+import { RbacGuard, Permissions, SuccessMessage } from '../../common';
 import {
   CreatePlayerStatusDto,
   UpdatePlayerStatusDto,
   PlayerStatusWithCountDto,
   MessageResponseDto,
 } from './dto';
-import { ApiStandardResponses } from '../../common/decorators';
-import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
+import { ApiStandardResponses, SuccessResponseDto, ErrorResponseDto } from '../../common';
 
 @ApiTags('玩家状态')
 @ApiExtraModels(

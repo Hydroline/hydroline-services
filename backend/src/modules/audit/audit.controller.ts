@@ -24,10 +24,13 @@ import {
   AuditStatsDto,
 } from './dto';
 import { AuthGuard } from '@nestjs/passport';
-import { RbacGuard } from '../core/guards';
-import { Permissions } from '../core/decorators';
-import { ApiStandardResponses } from '../../common/decorators';
-import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
+import { 
+  RbacGuard, 
+  Permissions,
+  ApiStandardResponses,
+  SuccessResponseDto, 
+  ErrorResponseDto 
+} from '../../common';
 
 @ApiTags('审计日志')
 @ApiExtraModels(

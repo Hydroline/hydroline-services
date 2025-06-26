@@ -1,6 +1,6 @@
 import { Module, Global } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
-import { RbacGuard } from './guards';
+import { RbacGuard } from '../../common/guards';
 
 @Global()
 @Module({

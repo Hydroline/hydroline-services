@@ -5,9 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { PrismaService } from '../../prisma/prisma.service';
-import { ROLES_KEY } from '../decorators/roles.decorator';
-import { PERMISSIONS_KEY } from '../decorators/roles.decorator';
+import { PrismaService } from '../../modules/prisma/prisma.service';
+import { ROLES_KEY, PERMISSIONS_KEY } from '../decorators/auth.decorator';
 
 @Injectable()
 export class RbacGuard implements CanActivate {
@@ -103,4 +102,4 @@ export class RbacGuard implements CanActivate {
 
     return { roles, permissions: Array.from(permissions) };
   }
-}
+} 

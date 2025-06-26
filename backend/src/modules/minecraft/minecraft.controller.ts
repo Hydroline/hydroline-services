@@ -26,8 +26,7 @@ import {
   JavaPingResponse,
   BedrockPingResponse,
 } from '../../common/utils/minecraft';
-import { ApiStandardResponses } from '../../common/decorators';
-import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
+import { ApiStandardResponses, SuccessResponseDto, ErrorResponseDto } from '../../common';
 import {
   JavaPingResponseDto,
   BedrockPingResponseDto,

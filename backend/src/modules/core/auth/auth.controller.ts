@@ -39,9 +39,13 @@ import {
   CleanupResponseDto,
   SSOUrlResponseDto,
 } from './dto';
-import { CurrentUser, Permissions, SuccessMessage } from '../decorators';
-import { RbacGuard } from '../guards';
-import { ApiStandardResponses } from '../../../common/decorators';
+import { 
+  CurrentUser, 
+  Permissions, 
+  SuccessMessage, 
+  RbacGuard,
+  ApiStandardResponses 
+} from '../../../common';
 import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
 
 @ApiTags('认证')

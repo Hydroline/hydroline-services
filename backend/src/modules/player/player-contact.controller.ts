@@ -20,16 +20,14 @@ import {
 } from '@nestjs/swagger';
 import { PlayerContactService } from './player-contact.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RbacGuard } from '../core/guards';
-import { Permissions, CurrentUser, SuccessMessage } from '../core/decorators';
+import { RbacGuard, Permissions, CurrentUser, SuccessMessage } from '../../common';
 import {
   CreatePlayerContactDto,
   UpdatePlayerContactDto,
   PlayerContactDto,
   MessageResponseDto,
 } from './dto';
-import { ApiStandardResponses } from '../../common/decorators';
-import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
+import { ApiStandardResponses, SuccessResponseDto, ErrorResponseDto } from '../../common';
 
 @ApiTags('玩家联系')
 @ApiExtraModels(

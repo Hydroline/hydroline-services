@@ -6,9 +6,8 @@ import {
   ApiExtraModels,
   ApiProperty,
 } from '@nestjs/swagger';
-import { SuccessMessage } from './modules/core/decorators';
-import { ApiStandardResponses } from './common/decorators';
-import { SuccessResponseDto, ErrorResponseDto } from './common/dto';
+import { SuccessMessage } from './common';
+import { ApiStandardResponses, SuccessResponseDto, ErrorResponseDto } from './common';
 
 export class ServerInfoDto {
   @ApiProperty({

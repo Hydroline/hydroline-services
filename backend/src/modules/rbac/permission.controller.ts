@@ -31,10 +31,15 @@ import {
   MessageResponseDto,
 } from './dto';
 import { AuthGuard } from '@nestjs/passport';
-import { RbacGuard } from '../core/guards';
-import { Permissions, CurrentUser, SuccessMessage } from '../core/decorators';
-import { ApiStandardResponses } from '../../common/decorators';
-import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
+import { 
+  RbacGuard, 
+  Permissions, 
+  CurrentUser, 
+  SuccessMessage,
+  ApiStandardResponses,
+  SuccessResponseDto, 
+  ErrorResponseDto 
+} from '../../common';
 
 @ApiTags('权限管理')
 @ApiExtraModels(
