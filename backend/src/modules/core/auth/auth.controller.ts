@@ -39,7 +39,7 @@ import {
   CleanupResponseDto,
   SSOUrlResponseDto,
 } from './dto';
-import { CurrentUser, Roles, SuccessMessage } from '../decorators';
+import { CurrentUser, Permissions, SuccessMessage } from '../decorators';
 import { RbacGuard } from '../guards';
 import { ApiStandardResponses } from '../../../common/decorators';
 import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
@@ -221,7 +221,7 @@ export class AuthController {
   @ApiStandardResponses(CleanupResponseDto, '过期会话清理完成')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), RbacGuard)
-  @Roles('super_admin', 'admin')
+  @Permissions('system:admin')
   @Post('cleanup-sessions')
   @SuccessMessage('过期会话清理完成')
   async cleanupExpiredSessions(@CurrentUser() user) {

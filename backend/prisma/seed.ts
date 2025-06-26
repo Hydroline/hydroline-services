@@ -136,6 +136,74 @@ async function main() {
         isSystem: true,
       },
     }),
+    prisma.permission.upsert({
+      where: { name: 'role:delete' },
+      update: {},
+      create: {
+        name: 'role:delete',
+        description: '删除角色',
+        resource: 'role',
+        action: 'delete',
+        isSystem: true,
+      },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'role:assign' },
+      update: {},
+      create: {
+        name: 'role:assign',
+        description: '分配角色权限',
+        resource: 'role',
+        action: 'assign',
+        isSystem: true,
+      },
+    }),
+
+    // Permission 权限管理
+    prisma.permission.upsert({
+      where: { name: 'permission:read' },
+      update: {},
+      create: {
+        name: 'permission:read',
+        description: '查看权限信息',
+        resource: 'permission',
+        action: 'read',
+        isSystem: true,
+      },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'permission:write' },
+      update: {},
+      create: {
+        name: 'permission:write',
+        description: '编辑权限信息',
+        resource: 'permission',
+        action: 'write',
+        isSystem: true,
+      },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'permission:delete' },
+      update: {},
+      create: {
+        name: 'permission:delete',
+        description: '删除权限',
+        resource: 'permission',
+        action: 'delete',
+        isSystem: true,
+      },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'permission:admin' },
+      update: {},
+      create: {
+        name: 'permission:admin',
+        description: '权限管理员权限',
+        resource: 'permission',
+        action: 'admin',
+        isSystem: true,
+      },
+    }),
 
     // OAuth管理权限
     prisma.permission.upsert({

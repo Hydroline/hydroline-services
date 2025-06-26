@@ -57,30 +57,30 @@ export class RoleController {
   @Post()
   @Permissions('role:admin')
   @SuccessMessage('角色创建成功')
-  create(@Body() createDto: CreateRoleDto, @CurrentUser() user) {
-    return this.roleService.create(createDto, user.id);
+  create(@Body() createRoleDto: CreateRoleDto, @CurrentUser() user) {
+    return this.roleService.create(createRoleDto, user.id);
   }
 
   @ApiOperation({ summary: '获取角色列表' })
   @ApiStandardResponses(RoleListDto, '角色列表获取成功')
   @Get()
-  @Permissions('rbac:read')
-  find(@Query() query: QueryRoleDto) {
+  @Permissions('role:read')
+  getRoles(@Query() query: QueryRoleDto) {
     return this.roleService.findAll(query);
   }
 
-  @ApiOperation({ summary: '获取单个角色信息' })
+  @ApiOperation({ summary: '获取指定角色信息' })
   @ApiStandardResponses(RoleWithDetailsDto, '角色信息获取成功')
   @Get(':id')
-  @Permissions('rbac:read')
-  findOne(@Param('id') id: string) {
+  @Permissions('role:read')
+  getRole(@Param('id') id: string) {
     return this.roleService.findOne(id);
   }
 
   @ApiOperation({ summary: '更新角色信息' })
   @ApiStandardResponses(RoleWithDetailsDto, '角色更新成功')
   @Patch(':id')
-  @Permissions('rbac:write')
+  @Permissions('role:write')
   @SuccessMessage('角色更新成功')
   update(
     @Param('id') id: string,
@@ -93,31 +93,30 @@ export class RoleController {
   @ApiOperation({ summary: '删除角色' })
   @ApiStandardResponses(MessageResponseDto, '角色删除成功')
   @Delete(':id')
-  @Permissions('rbac:delete')
+  @Permissions('role:delete')
   @HttpCode(HttpStatus.NO_CONTENT)
   @SuccessMessage('角色删除成功')
   remove(@Param('id') id: string, @CurrentUser() user) {
     return this.roleService.remove(id, user.id);
   }
 
-  @ApiOperation({ summary: '为多个用户分配角色' })
+  @ApiOperation({ summary: '为用户分配角色' })
   @ApiStandardResponses(MessageResponseDto, '角色分配成功')
   @Post(':roleId/assign')
-  @Permissions('rbac:assign')
-  @HttpCode(HttpStatus.OK)
+  @Permissions('role:assign')
   @SuccessMessage('角色分配成功')
   assignToUsers(
     @Param('roleId') roleId: string,
-    @Body() assignDto: AssignRoleDto,
+    @Body() assignRoleDto: AssignRoleDto,
     @CurrentUser() user,
   ) {
-    return this.roleService.assignToUsers(roleId, assignDto, user.id);
+    return this.roleService.assignToUsers(roleId, assignRoleDto, user.id);
   }
 
   @ApiOperation({ summary: '为角色分配权限' })
   @ApiStandardResponses(RoleWithDetailsDto, '权限分配成功')
   @Post(':id/permissions')
-  @Permissions('role:admin')
+  @Permissions('role:assign')
   @SuccessMessage('权限分配成功')
   assignPermissions(
     @Param('id') id: string,
@@ -137,8 +136,6 @@ export class RoleController {
 
   @ApiOperation({ summary: '移除用户角色' })
   @ApiStandardResponses(MessageResponseDto, '角色移除成功')
-  @ApiParam({ name: 'roleId', description: '角色ID' })
-  @ApiParam({ name: 'userId', description: '用户ID' })
   @Delete(':roleId/users/:userId')
   @Permissions('role:assign')
   @SuccessMessage('角色移除成功')
