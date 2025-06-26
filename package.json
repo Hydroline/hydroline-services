@@ -2,11 +2,17 @@
   "name": "hydroline-services",
   "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "backend",
-    "frontend",
-    "admin"
-  ],
+  "scripts": {
+    "admin:dev": "pnpm --filter hydroline-services-admin dev",
+    "frontend:dev": "pnpm --filter hydroline-services-frontend dev",
+    "backend:dev": "pnpm --filter hydroline-backend start:dev",
+    "admin:build": "pnpm --filter hydroline-services-admin build",
+    "frontend:build": "pnpm --filter hydroline-services-frontend build",
+    "backend:build": "pnpm --filter hydroline-backend build",
+    "admin:start": "pnpm --filter hydroline-services-admin preview",
+    "frontend:start": "pnpm --filter hydroline-services-frontend preview",
+    "backend:start": "pnpm --filter hydroline-backend start"
+  },
   "author": "Hydroline",
   "license": "AGPL-3.0-only",
   "description": "A Useful, Powerful, and Open-Source Minecraft Server Information Integration Platform.",
