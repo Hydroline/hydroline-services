@@ -22,7 +22,6 @@ import {
   CreatePlayerDto,
   UpdatePlayerDto,
   QueryPlayerDto,
-  ChangePasswordDto,
   PlayerDto,
   PlayerListDto,
   MessageResponseDto,
@@ -47,11 +46,11 @@ import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @ApiOperation({ summary: '创建新玩家' })
-  @ApiStandardResponses(PlayerDto, '玩家创建成功')
+  @ApiOperation({ summary: '绑定Minecraft账户（管理员功能）' })
+  @ApiStandardResponses(PlayerDto, 'Minecraft账户绑定成功')
   @Post()
-  @Permissions('player:write')
-  @SuccessMessage('玩家创建成功')
+  @Permissions('player:admin')
+  @SuccessMessage('Minecraft账户绑定成功')
   create(@Body() createPlayerDto: CreatePlayerDto, @CurrentUser() user) {
     return this.playerService.create(createPlayerDto, user.id);
   }
@@ -71,16 +70,7 @@ export class PlayerController {
     return this.playerService.findOne(user.id);
   }
 
-  @ApiOperation({ summary: '修改当前玩家密码' })
-  @ApiStandardResponses(MessageResponseDto, '密码修改成功')
-  @Patch('me/password')
-  @SuccessMessage('密码修改成功')
-  changePassword(
-    @CurrentUser() user,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return this.playerService.changePassword(user.id, changePasswordDto);
-  }
+
 
   @ApiOperation({ summary: '根据ID获取单个玩家信息' })
   @ApiStandardResponses(PlayerDto, '玩家信息获取成功')

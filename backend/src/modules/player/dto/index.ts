@@ -1,4 +1,3 @@
-export * from './change-password.dto';
 export * from './create-player.dto';
 export * from './player-contact.dto';
 export * from './player-status.dto';

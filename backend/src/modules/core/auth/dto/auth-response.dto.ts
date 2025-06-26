@@ -83,4 +83,21 @@ export class SSOUrlResponseDto {
     example: 'https://wiki.example.com/sso/callback?token=...' 
   })
   redirectUrl: string;
+}
+
+export class RegisterResponseDto {
+  @ApiProperty({ description: '用户信息', type: UserDto })
+  user: UserDto;
+
+  @ApiProperty({ 
+    description: '访问令牌', 
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' 
+  })
+  accessToken: string;
+
+  @ApiProperty({ 
+    description: '刷新令牌', 
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' 
+  })
+  refreshToken: string;
 } 

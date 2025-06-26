@@ -18,4 +18,4 @@ export class ChangePasswordDto {
   @IsString()
   @MinLength(6, { message: '新密码长度至少6位' })
   newPassword: string;
-}
+} 

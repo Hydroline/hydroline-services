@@ -307,4 +307,134 @@ export class AuthService {
 
     return user;
   }
+
+  /**
+   * 用户注册
+   */
+  async register(registerData: {
+    username: string;
+    email?: string;
+    password: string;
+    displayName?: string;
+    minecraftUuid?: string;
+    minecraftNick?: string;
+  }, deviceInfo?: string, ipAddress?: string) {
+    const { username, email, password, displayName, minecraftUuid, minecraftNick } = registerData;
+
+    // 检查用户名是否已存在
+    const existingUser = await this.prisma.user.findUnique({
+      where: { username },
+    });
+    if (existingUser) {
+      throw new BadRequestException('用户名已存在');
+    }
+
+    // 检查邮箱是否已存在
+    if (email) {
+      const existingEmail = await this.prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingEmail) {
+        throw new BadRequestException('邮箱已存在');
+      }
+    }
+
+    // 检查 Minecraft UUID 是否已存在
+    if (minecraftUuid) {
+      const existingMinecraftPlayer = await this.prisma.minecraftPlayer.findUnique({
+        where: { playerId: minecraftUuid },
+      });
+      if (existingMinecraftPlayer) {
+        throw new BadRequestException('该 Minecraft 账户已被绑定');
+      }
+    }
+
+    // 加密密码
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 事务创建用户和可能的 Minecraft 玩家记录
+    const result = await this.prisma.$transaction(async (tx) => {
+      // 创建用户
+      const user = await tx.user.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+          displayName: displayName || username,
+          isActive: true,
+        },
+      });
+
+      // 如果提供了 Minecraft 信息，创建玩家记录
+      if (minecraftUuid) {
+        // 获取默认状态和类型
+        const [defaultStatus, defaultType] = await Promise.all([
+          tx.playerStatus.findFirst({ where: { isDefault: true } }),
+          tx.playerType.findFirst({ where: { isDefault: true } }),
+        ]);
+
+        await tx.minecraftPlayer.create({
+          data: {
+            playerId: minecraftUuid,
+            playerNick: minecraftNick || username,
+            userId: user.id,
+            statusId: defaultStatus?.id,
+            typeId: defaultType?.id,
+            joinedAt: new Date(),
+            isActive: true,
+            metadata: {},
+          },
+        });
+      }
+
+      return user;
+    });
+
+    // 自动登录并返回 token
+    return this.login(result, deviceInfo, ipAddress);
+  }
+
+  /**
+   * 修改密码
+   */
+  async changePassword(userId: string, changePasswordData: {
+    oldPassword: string;
+    newPassword: string;
+  }) {
+    const { oldPassword, newPassword } = changePasswordData;
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+    if (!user.password) {
+      throw new BadRequestException('该用户未设置密码');
+    }
+
+    const isPasswordMatching = await this.playerService.validatePassword(
+      oldPassword,
+      user.password,
+    );
+    if (!isPasswordMatching) {
+      throw new BadRequestException('当前密码错误');
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedNewPassword,
+        tokenVersion: { increment: 1 }, // 使所有现有token失效
+      },
+    });
+
+    // 标记所有session为不活跃（强制重新登录）
+    await this.prisma.session.updateMany({
+      where: { userId },
+      data: { isActive: false },
+    });
+
+    return { message: '密码修改成功，请重新登录' };
+  }
 }

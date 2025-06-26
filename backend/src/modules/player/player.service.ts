@@ -12,7 +12,7 @@ import {
   PlayerSortBy,
   SortOrder,
 } from './dto/query-player.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+
 import { PlayerAuditService } from './player-audit.service';
 import * as bcrypt from 'bcrypt';
 
@@ -65,49 +65,7 @@ export class PlayerService {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  /**
-   * 修改密码
-   */
-  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('用户不存在');
-    }
-    if (!user.password) {
-      throw new BadRequestException('该用户未设置密码');
-    }
 
-    const isPasswordMatching = await this.validatePassword(
-      changePasswordDto.oldPassword,
-      user.password,
-    );
-    if (!isPasswordMatching) {
-      throw new BadRequestException('当前密码错误');
-    }
-
-    const hashedNewPassword = await bcrypt.hash(
-      changePasswordDto.newPassword,
-      10,
-    );
-
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        password: hashedNewPassword,
-        tokenVersion: { increment: 1 }, // 使所有现有token失效
-      },
-    });
-
-    // 记录审计日志
-    await this.auditService.logPlayerAction({
-      playerId: userId,
-      operatorId: userId,
-      action: 'CHANGE_PASSWORD',
-      reason: '用户修改密码',
-    });
-
-    return { message: '密码修改成功' };
-  }
 
   // ========== 玩家管理方法 ==========
 

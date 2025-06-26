@@ -28,8 +28,11 @@ import { SSOService } from './sso.service';
 import {
   LoginDto,
   RefreshTokenDto,
+  RegisterDto,
+  ChangePasswordDto,
   LoginResponseDto,
   RefreshResponseDto,
+  RegisterResponseDto,
   UserDto,
   SessionDto,
   MessageResponseDto,
@@ -47,6 +50,7 @@ import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
   ErrorResponseDto,
   LoginResponseDto,
   RefreshResponseDto,
+  RegisterResponseDto,
   UserDto,
   SessionDto,
   MessageResponseDto,
@@ -60,6 +64,30 @@ export class AuthController {
     private readonly ssoService: SSOService,
   ) {}
 
+  @ApiOperation({ summary: '用户注册' })
+  @ApiStandardResponses(RegisterResponseDto, '注册成功')
+  @HttpCode(HttpStatus.CREATED)
+  @Post('register')
+  @SuccessMessage('注册成功')
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Ip() ip: string,
+    @Headers('user-agent') userAgent?: string,
+  ) {
+    return this.authService.register(
+      {
+        username: registerDto.username,
+        email: registerDto.email,
+        password: registerDto.password,
+        displayName: registerDto.displayName,
+        minecraftUuid: registerDto.minecraftUuid,
+        minecraftNick: registerDto.minecraftNick,
+      },
+      userAgent || 'Unknown Device',
+      ip,
+    );
+  }
+
   @ApiOperation({ summary: '用户登录' })
   @ApiStandardResponses(LoginResponseDto, '登录成功')
   @HttpCode(HttpStatus.OK)
@@ -68,7 +96,7 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
-    @Headers('user-agent') userAgent: string,
+    @Headers('user-agent') userAgent?: string,
   ) {
     // 输入验证
     if (!loginDto.username?.trim() || !loginDto.password?.trim()) {
@@ -112,6 +140,22 @@ export class AuthController {
       throw new UnauthorizedException('用户信息不完整');
     }
     return user;
+  }
+
+  @ApiOperation({ summary: '修改当前用户密码' })
+  @ApiStandardResponses(MessageResponseDto, '密码修改成功')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post('change-password')
+  @SuccessMessage('密码修改成功')
+  async changePassword(
+    @CurrentUser() user,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(user.id, {
+      oldPassword: changePasswordDto.oldPassword,
+      newPassword: changePasswordDto.newPassword,
+    });
   }
 
   @ApiOperation({ summary: '获取用户会话列表' })
