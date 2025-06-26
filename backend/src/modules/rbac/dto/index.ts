@@ -5,3 +5,4 @@ export * from './query-permission.dto';
 export * from './query-role.dto';
 export * from './update-permission.dto';
 export * from './update-role.dto';
+export * from './rbac-response.dto';

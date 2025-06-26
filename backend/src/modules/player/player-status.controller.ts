@@ -14,55 +14,65 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { PlayerStatusService } from './player-status.service';
-import { JwtAuthGuard } from '../core/auth/jwt.strategy';
+import { AuthGuard } from '@nestjs/passport';
 import { RbacGuard } from '../core/guards';
-import { Permissions } from '../core/decorators';
+import { Permissions, SuccessMessage } from '../core/decorators';
 import {
   CreatePlayerStatusDto,
   UpdatePlayerStatusDto,
-} from './dto/player-status.dto';
+  PlayerStatusWithCountDto,
+  MessageResponseDto,
+} from './dto';
+import { ApiStandardResponses } from '../../common/decorators';
+import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
 
 @ApiTags('玩家状态')
+@ApiExtraModels(
+  SuccessResponseDto,
+  ErrorResponseDto,
+  PlayerStatusWithCountDto,
+  MessageResponseDto,
+)
 @Controller('player-statuses')
-@UseGuards(JwtAuthGuard, RbacGuard)
+@UseGuards(AuthGuard('jwt'), RbacGuard)
 @ApiBearerAuth()
 export class PlayerStatusController {
   constructor(private readonly playerStatusService: PlayerStatusService) {}
 
+  @ApiOperation({ summary: '获取所有玩家状态' })
+  @ApiStandardResponses(PlayerStatusWithCountDto, '状态列表获取成功')
   @Get()
   @Permissions('player:read')
-  @ApiOperation({ summary: '获取所有玩家状态' })
-  @ApiResponse({ status: 200, description: '获取成功' })
   async findAll() {
     return await this.playerStatusService.findAll();
   }
 
-  @Get(':id')
   @ApiOperation({ summary: '根据ID获取玩家状态' })
-  @ApiResponse({ status: 200, description: '获取成功' })
-  @ApiResponse({ status: 404, description: '状态不存在' })
+  @ApiStandardResponses(PlayerStatusWithCountDto, '状态信息获取成功')
+  @Get(':id')
   @Permissions('player:read')
   async findOne(@Param('id') id: string) {
     return await this.playerStatusService.findOne(id);
   }
 
+  @ApiOperation({ summary: '创建新的玩家状态' })
+  @ApiStandardResponses(PlayerStatusWithCountDto, '状态创建成功')
   @Post()
   @Permissions('player:admin')
-  @ApiOperation({ summary: '创建新的玩家状态' })
-  @ApiResponse({ status: 201, description: '创建成功' })
+  @SuccessMessage('状态创建成功')
   async create(@Body() createDto: CreatePlayerStatusDto) {
     return await this.playerStatusService.create(createDto);
   }
 
-  @Put(':id')
   @ApiOperation({ summary: '更新玩家状态' })
-  @ApiResponse({ status: 200, description: '更新成功' })
-  @ApiResponse({ status: 404, description: '状态不存在' })
+  @ApiStandardResponses(PlayerStatusWithCountDto, '状态更新成功')
+  @Put(':id')
   @Permissions('player:admin')
+  @SuccessMessage('状态更新成功')
   async update(
     @Param('id') id: string,
     @Body() updateDto: UpdatePlayerStatusDto,
@@ -70,12 +80,12 @@ export class PlayerStatusController {
     return await this.playerStatusService.update(id, updateDto);
   }
 
+  @ApiOperation({ summary: '删除玩家状态' })
+  @ApiStandardResponses(MessageResponseDto, '状态删除成功')
   @Delete(':id')
   @Permissions('player:admin')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: '删除玩家状态' })
-  @ApiResponse({ status: 200, description: '删除成功' })
-  @ApiResponse({ status: 404, description: '状态不存在' })
+  @SuccessMessage('状态删除成功')
   async remove(@Param('id') id: string) {
     return await this.playerStatusService.remove(id);
   }

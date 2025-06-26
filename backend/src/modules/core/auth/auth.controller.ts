@@ -21,14 +21,38 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SSOService } from './sso.service';
-import { LoginDto, RefreshTokenDto } from './dto';
+import {
+  LoginDto,
+  RefreshTokenDto,
+  LoginResponseDto,
+  RefreshResponseDto,
+  UserDto,
+  SessionDto,
+  MessageResponseDto,
+  CleanupResponseDto,
+  SSOUrlResponseDto,
+} from './dto';
 import { CurrentUser, Roles, SuccessMessage } from '../decorators';
 import { RbacGuard } from '../guards';
+import { ApiStandardResponses } from '../../../common/decorators';
+import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
 
 @ApiTags('认证')
+@ApiExtraModels(
+  SuccessResponseDto,
+  ErrorResponseDto,
+  LoginResponseDto,
+  RefreshResponseDto,
+  UserDto,
+  SessionDto,
+  MessageResponseDto,
+  CleanupResponseDto,
+  SSOUrlResponseDto,
+)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -37,16 +61,14 @@ export class AuthController {
   ) {}
 
   @ApiOperation({ summary: '用户登录' })
-  @ApiResponse({ status: 200, description: '登录成功' })
-  @ApiResponse({ status: 401, description: '用户名或密码错误' })
-  @ApiResponse({ status: 400, description: '请求参数错误' })
+  @ApiStandardResponses(LoginResponseDto, '登录成功')
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @SuccessMessage('登录成功')
   async login(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
-    @Headers('user-agent') userAgent: string,
+    @Headers('user-agent') userAgent?: string,
   ) {
     // 输入验证
     if (!loginDto.username?.trim() || !loginDto.password?.trim()) {
@@ -63,12 +85,11 @@ export class AuthController {
       throw new UnauthorizedException('用户名或密码错误');
     }
 
-    return this.authService.login(user, userAgent, ip);
+    return this.authService.login(user, userAgent || 'Unknown Device', ip);
   }
 
   @ApiOperation({ summary: '刷新访问令牌' })
-  @ApiResponse({ status: 200, description: '刷新成功' })
-  @ApiResponse({ status: 400, description: '无效的刷新令牌' })
+  @ApiStandardResponses(RefreshResponseDto, '令牌刷新成功')
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   @SuccessMessage('令牌刷新成功')
@@ -81,7 +102,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '获取当前用户信息' })
-  @ApiResponse({ status: 200, description: '获取成功' })
+  @ApiStandardResponses(UserDto, '用户信息获取成功')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
@@ -93,19 +114,21 @@ export class AuthController {
     return user;
   }
 
-  @Get('sessions')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth()
   @ApiOperation({ summary: '获取用户会话列表' })
+  @ApiStandardResponses(SessionDto, '会话列表获取成功')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('sessions')
   @SuccessMessage('会话列表获取成功')
   async getSessions(@CurrentUser() user) {
     return this.authService.getUserSessions(user.id);
   }
 
-  @Delete('sessions/:tokenId')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth()
   @ApiOperation({ summary: '撤销指定会话' })
+  @ApiStandardResponses(MessageResponseDto, '会话撤销成功')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('sessions/:tokenId')
   @SuccessMessage('会话撤销成功')
   async revokeSession(@CurrentUser() user, @Param('tokenId') tokenId: string) {
     if (!tokenId?.trim()) {
@@ -116,43 +139,46 @@ export class AuthController {
     return { message: '会话已撤销' };
   }
 
-  @Delete('sessions')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth()
   @ApiOperation({ summary: '撤销所有会话（除当前）' })
+  @ApiStandardResponses(MessageResponseDto, '所有会话撤销成功')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('sessions')
   @SuccessMessage('所有会话撤销成功')
   async revokeAllSessions(@CurrentUser() user) {
     await this.authService.revokeAllSessions(user.id);
     return { message: '所有会话已撤销，请重新登录' };
   }
 
-  @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth()
   @ApiOperation({ summary: '退出登录' })
+  @ApiStandardResponses(MessageResponseDto, '退出登录成功')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
   @SuccessMessage('退出登录成功')
   async logout(@CurrentUser() user, @Req() req) {
     try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (token) {
-      const payload = JSON.parse(
-        Buffer.from(token.split('.')[1], 'base64').toString(),
-      );
-      if (payload.jti) {
-        await this.authService.revokeSession(payload.jti, user.id);
+      const token = req.headers.authorization?.split(' ')[1];
+      if (token) {
+        const payload = JSON.parse(
+          Buffer.from(token.split('.')[1], 'base64').toString(),
+        );
+        if (payload.jti) {
+          await this.authService.revokeSession(payload.jti, user.id);
+        }
       }
-    }
-    return { message: '已成功退出登录' };
+      return { message: '已成功退出登录' };
     } catch (error) {
       return { message: '已成功退出登录' };
     }
   }
 
-  @Post('cleanup-sessions')
+  @ApiOperation({ summary: '清理过期会话（管理员功能）' })
+  @ApiStandardResponses(CleanupResponseDto, '过期会话清理完成')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), RbacGuard)
   @Roles('super_admin', 'admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '清理过期会话（管理员功能）' })
+  @Post('cleanup-sessions')
   @SuccessMessage('过期会话清理完成')
   async cleanupExpiredSessions(@CurrentUser() user) {
     // 权限检查已由 RbacGuard 完成
@@ -168,8 +194,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '生成 SSO 重定向 URL' })
-  @ApiResponse({ status: 200, description: '生成成功' })
-  @ApiResponse({ status: 400, description: '不支持的系统或SSO未启用' })
+  @ApiStandardResponses(SSOUrlResponseDto, 'SSO重定向URL生成成功')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get('sso/:system')

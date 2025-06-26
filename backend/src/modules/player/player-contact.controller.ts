@@ -15,8 +15,8 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { PlayerContactService } from './player-contact.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,18 +25,30 @@ import { Permissions, CurrentUser, SuccessMessage } from '../core/decorators';
 import {
   CreatePlayerContactDto,
   UpdatePlayerContactDto,
-} from './dto/player-contact.dto';
+  PlayerContactDto,
+  MessageResponseDto,
+} from './dto';
+import { ApiStandardResponses } from '../../common/decorators';
+import { SuccessResponseDto, ErrorResponseDto } from '../../common/dto';
 
 @ApiTags('玩家联系')
+@ApiExtraModels(
+  SuccessResponseDto,
+  ErrorResponseDto,
+  PlayerContactDto,
+  MessageResponseDto,
+)
 @Controller('players/:playerId/contacts')
 @UseGuards(AuthGuard('jwt'), RbacGuard)
 @ApiBearerAuth()
 export class PlayerContactController {
   constructor(private readonly contactService: PlayerContactService) {}
 
+  @ApiOperation({ summary: '为玩家添加联系方式' })
+  @ApiStandardResponses(PlayerContactDto, '联系方式添加成功')
   @Post()
   @Permissions('player:write')
-  @ApiOperation({ summary: '为玩家添加联系方式' })
+  @SuccessMessage('联系方式添加成功')
   create(
     @Param('playerId') playerId: string,
     @Body() createDto: CreatePlayerContactDto,
@@ -44,16 +56,18 @@ export class PlayerContactController {
     return this.contactService.create({ ...createDto, playerId });
   }
 
+  @ApiOperation({ summary: '获取玩家的所有联系方式' })
+  @ApiStandardResponses(PlayerContactDto, '联系方式列表获取成功')
   @Get()
   @Permissions('player:read')
-  @ApiOperation({ summary: '获取玩家的所有联系方式' })
   findAll(@Param('playerId') playerId: string) {
     return this.contactService.findByPlayer(playerId);
   }
 
+  @ApiOperation({ summary: '更新玩家的联系方式' })
+  @ApiStandardResponses(PlayerContactDto, '联系方式更新成功')
   @Patch(':contactId')
   @Permissions('player:write')
-  @ApiOperation({ summary: '更新玩家的联系方式' })
   @SuccessMessage('联系方式更新成功')
   update(
     @Param('contactId') contactId: string,
@@ -62,10 +76,12 @@ export class PlayerContactController {
     return this.contactService.update(contactId, updateDto);
   }
 
+  @ApiOperation({ summary: '删除玩家的联系方式' })
+  @ApiStandardResponses(MessageResponseDto, '联系方式删除成功')
   @Delete(':contactId')
   @Permissions('player:write')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: '删除玩家的联系方式' })
+  @SuccessMessage('联系方式删除成功')
   remove(@Param('contactId') contactId: string) {
     return this.contactService.remove(contactId);
   }
