@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -84,13 +88,16 @@ export class PlayerTypeService {
   /**
    * 更新类型
    */
-  async update(id: string, data: {
-    name?: string;
-    description?: string;
-    permissions?: Record<string, any>;
-    isDefault?: boolean;
-    sortOrder?: number;
-  }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      permissions?: Record<string, any>;
+      isDefault?: boolean;
+      sortOrder?: number;
+    },
+  ) {
     const type = await this.findOne(id);
 
     // 检查系统类型
@@ -151,4 +158,4 @@ export class PlayerTypeService {
       where: { isDefault: true },
     });
   }
-} 
+}

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -121,13 +125,16 @@ export class PlayerContactService {
   /**
    * 更新联系信息
    */
-  async update(id: string, data: {
-    contactType?: string;
-    contactValue?: string;
-    isPrimary?: boolean;
-    isVerified?: boolean;
-    note?: string;
-  }) {
+  async update(
+    id: string,
+    data: {
+      contactType?: string;
+      contactValue?: string;
+      isPrimary?: boolean;
+      isVerified?: boolean;
+      note?: string;
+    },
+  ) {
     const contact = await this.findOne(id);
 
     // 检查是否已存在相同的联系方式（排除当前记录）
@@ -216,7 +223,7 @@ export class PlayerContactService {
       },
     });
 
-    return stats.map(stat => ({
+    return stats.map((stat) => ({
       contactType: stat.contactType,
       count: stat._count.contactType,
     }));
@@ -244,4 +251,4 @@ export class PlayerContactService {
 
     return contact?.player || null;
   }
-} 
+}

@@ -8,14 +8,18 @@ import config from '../../../config';
 export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
   constructor(private readonly authService: AuthService) {
     const microsoftConfig = config.oauth.providers.microsoft;
-    
+
     // 检查Microsoft OAuth是否已启用和配置
     if (!microsoftConfig.enabled) {
-      throw new Error('Microsoft OAuth is not enabled. Please set OAUTH_MICROSOFT_ENABLED=true in your configuration.');
+      throw new Error(
+        'Microsoft OAuth is not enabled. Please set OAUTH_MICROSOFT_ENABLED=true in your configuration.',
+      );
     }
 
     if (!microsoftConfig.clientId || !microsoftConfig.clientSecret) {
-      throw new Error('Microsoft OAuth credentials are not configured. Please set OAUTH_MICROSOFT_CLIENT_ID and OAUTH_MICROSOFT_CLIENT_SECRET.');
+      throw new Error(
+        'Microsoft OAuth credentials are not configured. Please set OAUTH_MICROSOFT_CLIENT_ID and OAUTH_MICROSOFT_CLIENT_SECRET.',
+      );
     }
 
     super({
@@ -51,11 +55,29 @@ export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
   }
 
   private async getUserInfo(accessToken: string) {
-    const response = await fetch('https://graph.microsoft.com/v1.0/me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.json();
+    try {
+      const response = await fetch('https://graph.microsoft.com/v1.0/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Microsoft Graph API error: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const userData = await response.json();
+
+      if (!userData || !userData.id) {
+        throw new Error('Invalid user data received from Microsoft Graph API');
+      }
+
+      return userData;
+    } catch (error) {
+      console.error('Failed to fetch user info from Microsoft Graph:', error);
+      throw new Error('无法获取用户信息，请稍后重试');
+    }
   }
 }

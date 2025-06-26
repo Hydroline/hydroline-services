@@ -19,7 +19,10 @@ if (config.oauth.providers.microsoft.enabled) {
     const { MicrosoftStrategy } = require('./oauth.strategy');
     dynamicProviders.push(MicrosoftStrategy);
   } catch (error) {
-    console.warn('Microsoft OAuth strategy disabled due to configuration error:', error.message);
+    console.warn(
+      'Microsoft OAuth strategy disabled due to configuration error:',
+      error.message,
+    );
   }
 }
 

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -47,7 +52,7 @@ export class RoleService {
       // 分配权限
       if (permissionIds && permissionIds.length > 0) {
         await tx.rolePermission.createMany({
-          data: permissionIds.map(permissionId => ({
+          data: permissionIds.map((permissionId) => ({
             roleId: newRole.id,
             permissionId,
           })),
@@ -70,12 +75,7 @@ export class RoleService {
   }
 
   async findAll(query: QueryRoleDto) {
-    const {
-      page = '1',
-      limit = '20',
-      search,
-      isSystem,
-    } = query;
+    const { page = '1', limit = '20', search, isSystem } = query;
 
     const pageNumber = parseInt(page, 10);
     const pageSize = Math.min(parseInt(limit, 10), 100);
@@ -112,10 +112,7 @@ export class RoleService {
             },
           },
         },
-        orderBy: [
-          { priority: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
         skip,
         take: pageSize,
       }),
@@ -123,9 +120,9 @@ export class RoleService {
     ]);
 
     return {
-      data: roles.map(role => ({
+      data: roles.map((role) => ({
         ...role,
-        permissions: role.rolePermissions.map(rp => rp.permission),
+        permissions: role.rolePermissions.map((rp) => rp.permission),
         userCount: role._count.userRoles,
         rolePermissions: undefined,
         _count: undefined,
@@ -171,8 +168,8 @@ export class RoleService {
 
     return {
       ...role,
-      permissions: role.rolePermissions.map(rp => rp.permission),
-      users: role.userRoles.map(ur => ur.user),
+      permissions: role.rolePermissions.map((rp) => rp.permission),
+      users: role.userRoles.map((ur) => ur.user),
       rolePermissions: undefined,
       userRoles: undefined,
     };
@@ -218,7 +215,7 @@ export class RoleService {
         // 添加新权限关联
         if (permissionIds.length > 0) {
           await tx.rolePermission.createMany({
-            data: permissionIds.map(permissionId => ({
+            data: permissionIds.map((permissionId) => ({
               roleId: id,
               permissionId,
             })),
@@ -266,7 +263,11 @@ export class RoleService {
     return { message: '角色删除成功' };
   }
 
-  async assignPermissions(roleId: string, permissionIds: string[], operatorId: string) {
+  async assignPermissions(
+    roleId: string,
+    permissionIds: string[],
+    operatorId: string,
+  ) {
     const role = await this.findOne(roleId);
 
     if (role.isSystem) {
@@ -290,7 +291,7 @@ export class RoleService {
       // 添加新权限关联
       if (permissionIds.length > 0) {
         await tx.rolePermission.createMany({
-          data: permissionIds.map(permissionId => ({
+          data: permissionIds.map((permissionId) => ({
             roleId,
             permissionId,
           })),
@@ -310,7 +311,11 @@ export class RoleService {
     return this.findOne(roleId);
   }
 
-  async assignToUsers(roleId: string, assignRoleDto: AssignRoleDto, operatorId: string) {
+  async assignToUsers(
+    roleId: string,
+    assignRoleDto: AssignRoleDto,
+    operatorId: string,
+  ) {
     const role = await this.findOne(roleId);
     const { userIds, expiresAt } = assignRoleDto;
 
@@ -324,7 +329,7 @@ export class RoleService {
 
     // 批量分配角色
     await this.prisma.userRole.createMany({
-      data: userIds.map(userId => ({
+      data: userIds.map((userId) => ({
         userId,
         roleId,
         assignedBy: operatorId,
@@ -369,4 +374,23 @@ export class RoleService {
 
     return { message: '角色移除成功' };
   }
-} 
+
+  async getPermissions(roleId: string) {
+    const roleWithPermissions = await this.prisma.role.findUnique({
+      where: { id: roleId },
+      include: {
+        rolePermissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    });
+
+    if (!roleWithPermissions) {
+      throw new NotFoundException('角色不存在');
+    }
+
+    return roleWithPermissions.rolePermissions.map((rp) => rp.permission);
+  }
+}

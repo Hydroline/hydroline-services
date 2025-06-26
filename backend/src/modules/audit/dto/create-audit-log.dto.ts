@@ -6,4 +6,4 @@ export interface CreateAuditLogDto {
   detail?: any;
   ipAddress?: string;
   userAgent?: string;
-} 
+}

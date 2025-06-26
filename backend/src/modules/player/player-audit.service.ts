@@ -18,7 +18,7 @@ export class PlayerAuditService {
   constructor(
     @Inject(forwardRef(() => AuditService))
     private readonly auditService: AuditService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   /**
@@ -222,4 +222,4 @@ export class PlayerAuditService {
       activeOperators,
     };
   }
-} 
+}

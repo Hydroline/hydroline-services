@@ -12,4 +12,4 @@ import { AuditModule } from '../audit/audit.module';
   providers: [RoleService, PermissionService],
   exports: [RoleService, PermissionService],
 })
-export class RbacModule {} 
+export class RbacModule {}

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -8,12 +13,15 @@ import { QueryPermissionDto } from './dto/query-permission.dto';
 @Injectable()
 export class PermissionService {
   private readonly RESOURCES = [
-    'user', 'player', 'role', 'permission', 'audit', 'system'
+    'user',
+    'player',
+    'role',
+    'permission',
+    'audit',
+    'system',
   ];
 
-  private readonly ACTIONS = [
-    'read', 'write', 'delete', 'assign', 'admin'
-  ];
+  private readonly ACTIONS = ['read', 'write', 'delete', 'assign', 'admin'];
 
   constructor(
     private readonly prisma: PrismaService,
@@ -117,9 +125,9 @@ export class PermissionService {
     ]);
 
     return {
-      data: permissions.map(permission => ({
+      data: permissions.map((permission) => ({
         ...permission,
-        roles: permission.rolePermissions.map(rp => rp.role),
+        roles: permission.rolePermissions.map((rp) => rp.role),
         roleCount: permission._count.rolePermissions,
         rolePermissions: undefined,
         _count: undefined,
@@ -159,12 +167,16 @@ export class PermissionService {
 
     return {
       ...permission,
-      roles: permission.rolePermissions.map(rp => rp.role),
+      roles: permission.rolePermissions.map((rp) => rp.role),
       rolePermissions: undefined,
     };
   }
 
-  async update(id: string, updatePermissionDto: UpdatePermissionDto, operatorId: string) {
+  async update(
+    id: string,
+    updatePermissionDto: UpdatePermissionDto,
+    operatorId: string,
+  ) {
     const existingPermission = await this.findOne(id);
 
     if (existingPermission.isSystem) {
@@ -184,16 +196,18 @@ export class PermissionService {
     }
 
     // 检查新资源+操作组合是否已存在
-    if ((resource && resource !== existingPermission.resource) || 
-        (action && action !== existingPermission.action)) {
+    if (
+      (resource && resource !== existingPermission.resource) ||
+      (action && action !== existingPermission.action)
+    ) {
       const newResource = resource || existingPermission.resource;
       const newAction = action || existingPermission.action;
-      
+
       const conflictCombination = await this.prisma.permission.findFirst({
-        where: { 
-          resource: newResource, 
+        where: {
+          resource: newResource,
           action: newAction,
-          id: { not: id }
+          id: { not: id },
         },
       });
       if (conflictCombination) {
@@ -261,7 +275,7 @@ export class PermissionService {
 
     return {
       available: this.RESOURCES,
-      used: resources.map(r => ({
+      used: resources.map((r) => ({
         name: r.resource,
         count: r._count.resource,
       })),
@@ -281,10 +295,10 @@ export class PermissionService {
 
     return {
       available: this.ACTIONS,
-      used: actions.map(a => ({
+      used: actions.map((a) => ({
         name: a.action,
         count: a._count.action,
       })),
     };
   }
-} 
+}

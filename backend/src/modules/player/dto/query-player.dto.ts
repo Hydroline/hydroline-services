@@ -1,5 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsBoolean, IsNumberString, IsEnum, IsUUID } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsBoolean,
+  IsNumberString,
+  IsEnum,
+  IsUUID,
+} from 'class-validator';
 
 export enum PlayerSortBy {
   CREATED_AT = 'createdAt',
@@ -111,4 +118,4 @@ export class QueryPlayerDto {
   @IsOptional()
   @IsString()
   endDate?: string;
-} 
+}

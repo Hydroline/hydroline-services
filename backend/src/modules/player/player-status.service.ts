@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -84,13 +88,16 @@ export class PlayerStatusService {
   /**
    * 更新状态
    */
-  async update(id: string, data: {
-    name?: string;
-    description?: string;
-    color?: string;
-    isDefault?: boolean;
-    sortOrder?: number;
-  }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      color?: string;
+      isDefault?: boolean;
+      sortOrder?: number;
+    },
+  ) {
     const status = await this.findOne(id);
 
     // 检查系统状态
@@ -151,4 +158,4 @@ export class PlayerStatusService {
       where: { isDefault: true },
     });
   }
-} 
+}

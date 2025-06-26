@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
@@ -286,8 +286,8 @@ async function main() {
   }
 
   // 为管理员分配基础权限（除了系统管理权限）
-  const adminPermissions = permissions.filter(p => 
-    !p.name.startsWith('system:admin') && !p.name.includes(':delete')
+  const adminPermissions = permissions.filter(
+    (p) => !p.name.startsWith('system:admin') && !p.name.includes(':delete'),
   );
   for (const permission of adminPermissions) {
     await prisma.rolePermission.upsert({
@@ -306,8 +306,9 @@ async function main() {
   }
 
   // 为版主分配读取权限
-  const moderatorPermissions = permissions.filter(p => 
-    p.action === 'read' || (p.resource === 'player' && p.action === 'write')
+  const moderatorPermissions = permissions.filter(
+    (p) =>
+      p.action === 'read' || (p.resource === 'player' && p.action === 'write'),
   );
   for (const permission of moderatorPermissions) {
     await prisma.rolePermission.upsert({
@@ -547,7 +548,7 @@ async function main() {
   // 7. 创建默认超级管理员用户（如果不存在）
   console.log('创建默认管理员用户...');
   const hashedPassword = await bcrypt.hash('admin123456', 12);
-  
+
   const adminUser = await prisma.user.upsert({
     where: { username: 'admin' },
     update: {},

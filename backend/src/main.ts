@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
   TransformInterceptor,
   ExceptionInterceptor,
 } from './modules/core/interceptors';
+import { HttpExceptionFilter } from './common/filters';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import config from './config';
@@ -26,10 +27,16 @@ async function bootstrap() {
     }),
   );
 
+  // 全局异常过滤器（作为最后的异常处理兜底）
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // 获取 Reflector 实例用于拦截器
+  const reflector = app.get(Reflector);
+
   // 全局拦截器
   app.useGlobalInterceptors(
-    new TransformInterceptor(),
-    new ExceptionInterceptor(),
+    new ExceptionInterceptor(), // 异常拦截器放在前面
+    new TransformInterceptor(reflector), // 响应转换拦截器放在后面，传入 reflector
   );
 
   // 配置Swagger文档

@@ -59,4 +59,4 @@ export class QueryAuditDto {
   @IsOptional()
   @IsDateString()
   endDate?: string;
-} 
+}

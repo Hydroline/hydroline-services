@@ -53,4 +53,4 @@ export class QueryPermissionDto {
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   isSystem?: boolean;
-} 
+}

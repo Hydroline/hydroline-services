@@ -115,13 +115,7 @@ export class AuditService {
    * 获取玩家审计日志
    */
   async getPlayerAuditLogs(playerId: string, query: QueryAuditDto) {
-    const {
-      page = '1',
-      limit = '20',
-      action,
-      startDate,
-      endDate,
-    } = query;
+    const { page = '1', limit = '20', action, startDate, endDate } = query;
 
     const pageNumber = parseInt(page, 10);
     const pageSize = Math.min(parseInt(limit, 10), 100);
@@ -234,14 +228,14 @@ export class AuditService {
       period: `最近${days}天`,
       systemActions: {
         total: systemStats.reduce((sum, item) => sum + item._count.action, 0),
-        byAction: systemStats.map(item => ({
+        byAction: systemStats.map((item) => ({
           action: item.action,
           count: item._count.action,
         })),
       },
       playerActions: {
         total: playerStats.reduce((sum, item) => sum + item._count.action, 0),
-        byAction: playerStats.map(item => ({
+        byAction: playerStats.map((item) => ({
           action: item.action,
           count: item._count.action,
         })),
@@ -249,4 +243,4 @@ export class AuditService {
       dailyActivity,
     };
   }
-} 
+}

@@ -13,7 +13,7 @@ import {
 
 export class CreatePlayerDto {
   // ========== 用户账户信息 ==========
-  
+
   @ApiProperty({
     description: '用户名（登录用）',
     example: 'steve_minecraft',
@@ -106,4 +106,4 @@ export class CreatePlayerDto {
   @IsObject()
   @IsOptional()
   metadata?: Record<string, any>;
-} 
+}

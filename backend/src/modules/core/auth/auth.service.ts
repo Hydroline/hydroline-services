@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
 import config from '../../../config';
@@ -48,13 +48,21 @@ export class AuthService {
 
   // 增强版JWT验证 - 包含session和tokenVersion检查
   async validateJwtPayload(payload: any): Promise<any> {
+    // 验证 payload 结构
+    if (!payload || typeof payload !== 'object' || !payload.sub) {
+      throw new UnauthorizedException('无效的令牌格式');
+    }
+
     const user = await this.validateUserById(payload.sub);
     if (!user) {
       return null;
     }
 
     // 检查token版本是否匹配
-    if (payload.tokenVersion !== user.tokenVersion) {
+    if (
+      typeof payload.tokenVersion === 'number' &&
+      payload.tokenVersion !== user.tokenVersion
+    ) {
       throw new UnauthorizedException('Token已失效，请重新登录');
     }
 
@@ -92,7 +100,10 @@ export class AuthService {
         throw new BadRequestException('该账户未设置密码，请使用第三方登录');
       }
 
-      const isPasswordValid = await this.playerService.validatePassword(password, user.password);
+      const isPasswordValid = await this.playerService.validatePassword(
+        password,
+        user.password,
+      );
       if (!isPasswordValid) {
         return null;
       }
@@ -253,14 +264,22 @@ export class AuthService {
 
   // 清理过期session
   async cleanupExpiredSessions() {
-    await this.prisma.session.deleteMany({
-      where: {
-        OR: [
-          { expiresAt: { lt: new Date() } },
-          { isActive: false },
-        ],
-      },
-    });
+    try {
+      const result = await this.prisma.session.deleteMany({
+        where: {
+          OR: [{ expiresAt: { lt: new Date() } }, { isActive: false }],
+        },
+      });
+
+      if (result.count > 0) {
+        console.log(`清理了 ${result.count} 个过期的会话`);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('清理过期会话时出错:', error);
+      throw error;
+    }
   }
 
   async validateOAuthUser(oauthUser: any) {
@@ -277,7 +296,7 @@ export class AuthService {
           email: oauthUser.email,
           password: await bcrypt.hash(
             Math.random().toString(36).slice(-10),
-            10,
+            config.security.bcryptRounds,
           ), // 随机密码
           isActive: true,
         },

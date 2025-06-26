@@ -2,66 +2,57 @@ import {
   Controller,
   Get,
   Post,
-  Put,
-  Delete,
   Body,
+  Patch,
   Param,
-  Query,
+  Delete,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PlayerTypeService } from './player-type.service';
-import { JwtAuthGuard } from '../core/auth/jwt.strategy';
-import { PermissionsGuard } from '../core/guards/roles.guard';
-import { Permissions } from '../core/decorators/roles.decorator';
+import {
+  CreatePlayerTypeDto,
+  UpdatePlayerTypeDto,
+} from './dto/player-type.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RbacGuard } from '../core/guards';
+import { Permissions } from '../core/decorators';
 
-@ApiTags('玩家管理')
-@ApiBearerAuth('JWT')
-@Controller('player-type')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@ApiTags('玩家类型')
+@Controller('player-types')
+@UseGuards(AuthGuard('jwt'), RbacGuard)
+@ApiBearerAuth()
 export class PlayerTypeController {
-  constructor(private readonly playerTypeService: PlayerTypeService) {}
-
-  @Get()
-  @ApiOperation({ summary: '获取所有玩家类型' })
-  @ApiResponse({ status: 200, description: '获取成功' })
-  @Permissions('player:read')
-  async findAll() {
-    return await this.playerTypeService.findAll();
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: '根据ID获取玩家类型' })
-  @ApiResponse({ status: 200, description: '获取成功' })
-  @ApiResponse({ status: 404, description: '类型不存在' })
-  @Permissions('player:read')
-  async findOne(@Param('id') id: string) {
-    return await this.playerTypeService.findOne(id);
-  }
+  constructor(private readonly typeService: PlayerTypeService) {}
 
   @Post()
-  @ApiOperation({ summary: '创建新玩家类型' })
-  @ApiResponse({ status: 201, description: '创建成功' })
-  @Permissions('player:write')
-  async create(@Body() createTypeDto: any) {
-    return await this.playerTypeService.create(createTypeDto);
+  @Permissions('player:admin')
+  @ApiOperation({ summary: '创建新的玩家类型' })
+  create(@Body() createDto: CreatePlayerTypeDto) {
+    return this.typeService.create(createDto);
   }
 
-  @Put(':id')
+  @Get()
+  @Permissions('player:read')
+  @ApiOperation({ summary: '获取所有玩家类型' })
+  findAll() {
+    return this.typeService.findAll();
+  }
+
+  @Patch(':id')
+  @Permissions('player:admin')
   @ApiOperation({ summary: '更新玩家类型' })
-  @ApiResponse({ status: 200, description: '更新成功' })
-  @ApiResponse({ status: 404, description: '类型不存在' })
-  @Permissions('player:write')
-  async update(@Param('id') id: string, @Body() updateTypeDto: any) {
-    return await this.playerTypeService.update(id, updateTypeDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdatePlayerTypeDto) {
+    return this.typeService.update(id, updateDto);
   }
 
   @Delete(':id')
+  @Permissions('player:admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: '删除玩家类型' })
-  @ApiResponse({ status: 200, description: '删除成功' })
-  @ApiResponse({ status: 404, description: '类型不存在' })
-  @Permissions('player:write')
-  async remove(@Param('id') id: string) {
-    return await this.playerTypeService.remove(id);
+  remove(@Param('id') id: string) {
+    return this.typeService.remove(id);
   }
-} 
+}

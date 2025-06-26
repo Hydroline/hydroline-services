@@ -18,14 +18,14 @@ import {
 } from '@nestjs/swagger';
 import { AuditService } from './audit.service';
 import { QueryAuditDto } from './dto/query-audit.dto';
-import { JwtAuthGuard } from '../core/auth/jwt.strategy';
-import { PermissionsGuard } from '../core/guards/roles.guard';
-import { Permissions } from '../core/decorators/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { RbacGuard } from '../core/guards';
+import { Permissions } from '../core/decorators';
 
 @ApiTags('审计日志')
-@ApiBearerAuth('JWT')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('audit')
+@UseGuards(AuthGuard('jwt'), RbacGuard)
+@ApiBearerAuth()
 export class AuditController {
   constructor(private readonly auditService: AuditService) {}
 
@@ -52,7 +52,7 @@ export class AuditController {
   @Get('my')
   @ApiOperation({ summary: '获取当前用户的操作日志' })
   @ApiResponse({ status: 200, description: '查询成功' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   getMyAuditLogs(@Request() req, @Query() query: QueryAuditDto) {
     return this.auditService.getUserAuditLogs(req.user.id, query);
   }
@@ -64,4 +64,4 @@ export class AuditController {
   getAuditStats(@Query('days') days?: number) {
     return this.auditService.getAuditStats(days || 30);
   }
-} 
+}

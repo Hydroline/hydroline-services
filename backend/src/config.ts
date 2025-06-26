@@ -19,6 +19,20 @@ export default {
     version: '1.0.0',
   },
 
+  // ===== 服务器信息配置 =====
+  server: {
+    timezone: process.env.SERVER_TIMEZONE || 'UTC',
+    location: {
+      country: process.env.SERVER_COUNTRY || 'CN',
+      region: process.env.SERVER_REGION || 'Asia/Shanghai',
+      city: process.env.SERVER_CITY || 'Shanghai',
+    },
+    timeFormat: {
+      useUTC: process.env.USE_UTC_TIME !== 'false', // 默认使用UTC时间
+      timestampUnit: 'milliseconds', // 时间戳单位：毫秒
+    },
+  },
+
   // ===== 数据库配置 =====
   db: {
     url:
@@ -30,7 +44,9 @@ export default {
   jwt: {
     secret: process.env.JWT_SECRET || 'hydroline-jwt-secret-请在生产环境中修改',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'hydroline-refresh-secret-请在生产环境中修改',
+    refreshSecret:
+      process.env.JWT_REFRESH_SECRET ||
+      'hydroline-refresh-secret-请在生产环境中修改',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
     issuer: 'hydroline-services',
     audience: ['hydroline-web', 'hydroline-api'],
@@ -54,26 +70,34 @@ export default {
         enabled: process.env.OAUTH_MICROSOFT_ENABLED === 'true' || false,
         clientId: process.env.OAUTH_MICROSOFT_CLIENT_ID || '',
         clientSecret: process.env.OAUTH_MICROSOFT_CLIENT_SECRET || '',
-        callbackURL: process.env.OAUTH_MICROSOFT_CALLBACK_URL || 'http://localhost:3000/api/auth/microsoft/callback',
+        callbackURL:
+          process.env.OAUTH_MICROSOFT_CALLBACK_URL ||
+          'http://localhost:3000/api/auth/microsoft/callback',
         scope: ['profile', 'email', 'XboxLive.signin'],
       },
       qq: {
         enabled: process.env.OAUTH_QQ_ENABLED === 'true' || false,
         clientId: process.env.OAUTH_QQ_CLIENT_ID || '',
         clientSecret: process.env.OAUTH_QQ_CLIENT_SECRET || '',
-        callbackURL: process.env.OAUTH_QQ_CALLBACK_URL || 'http://localhost:3000/api/auth/qq/callback',
+        callbackURL:
+          process.env.OAUTH_QQ_CALLBACK_URL ||
+          'http://localhost:3000/api/auth/qq/callback',
       },
       wechat: {
         enabled: process.env.OAUTH_WECHAT_ENABLED === 'true' || false,
         appId: process.env.OAUTH_WECHAT_APP_ID || '',
         appSecret: process.env.OAUTH_WECHAT_APP_SECRET || '',
-        callbackURL: process.env.OAUTH_WECHAT_CALLBACK_URL || 'http://localhost:3000/api/auth/wechat/callback',
+        callbackURL:
+          process.env.OAUTH_WECHAT_CALLBACK_URL ||
+          'http://localhost:3000/api/auth/wechat/callback',
       },
       discord: {
         enabled: process.env.OAUTH_DISCORD_ENABLED === 'true' || false,
         clientId: process.env.OAUTH_DISCORD_CLIENT_ID || '',
         clientSecret: process.env.OAUTH_DISCORD_CLIENT_SECRET || '',
-        callbackURL: process.env.OAUTH_DISCORD_CALLBACK_URL || 'http://localhost:3000/api/auth/discord/callback',
+        callbackURL:
+          process.env.OAUTH_DISCORD_CALLBACK_URL ||
+          'http://localhost:3000/api/auth/discord/callback',
       },
     },
   },
@@ -82,28 +106,46 @@ export default {
   sso: {
     enabled: process.env.SSO_ENABLED === 'true' || false,
     sessionCookieName: 'hydroline_session',
-    sessionSecret: process.env.SESSION_SECRET || 'hydroline-session-secret-请在生产环境中修改',
+    sessionSecret:
+      process.env.SESSION_SECRET ||
+      'hydroline-session-secret-请在生产环境中修改',
     sessionTtl: 24 * 60 * 60, // 会话有效期（秒）
-    crossDomainEnabled: process.env.SSO_CROSS_DOMAIN_ENABLED === 'true' || false,
-    trustedDomains: process.env.SSO_TRUSTED_DOMAINS?.split(',') || ['localhost', '*.hydroline.local', '*.hydroline.com'],
+    crossDomainEnabled:
+      process.env.SSO_CROSS_DOMAIN_ENABLED === 'true' || false,
+    trustedDomains: process.env.SSO_TRUSTED_DOMAINS?.split(',') || [
+      'localhost',
+      '*.hydroline.local',
+      '*.hydroline.com',
+    ],
     clients: {
       wiki: {
         name: 'Hydroline Wiki',
         url: process.env.SSO_WIKI_URL || 'http://wiki.hydroline.local',
-        callbackUrl: process.env.SSO_WIKI_CALLBACK_URL || 'http://wiki.hydroline.local/sso/callback',
-        secret: process.env.SSO_WIKI_SECRET || 'wiki-sso-secret-请在生产环境中修改',
+        callbackUrl:
+          process.env.SSO_WIKI_CALLBACK_URL ||
+          'http://wiki.hydroline.local/sso/callback',
+        secret:
+          process.env.SSO_WIKI_SECRET || 'wiki-sso-secret-请在生产环境中修改',
       },
       forum: {
         name: 'Hydroline Forum',
         url: process.env.SSO_FORUM_URL || 'http://forum.hydroline.local',
-        callbackUrl: process.env.SSO_FORUM_CALLBACK_URL || 'http://forum.hydroline.local/sso/callback',
-        secret: process.env.SSO_FORUM_SECRET || 'forum-sso-secret-请在生产环境中修改',
+        callbackUrl:
+          process.env.SSO_FORUM_CALLBACK_URL ||
+          'http://forum.hydroline.local/sso/callback',
+        secret:
+          process.env.SSO_FORUM_SECRET || 'forum-sso-secret-请在生产环境中修改',
       },
       mediawiki: {
         name: 'MediaWiki',
-        url: process.env.SSO_MEDIAWIKI_URL || 'http://mediawiki.hydroline.local',
-        callbackUrl: process.env.SSO_MEDIAWIKI_CALLBACK_URL || 'http://mediawiki.hydroline.local/sso/callback',
-        secret: process.env.SSO_MEDIAWIKI_SECRET || 'mediawiki-sso-secret-请在生产环境中修改',
+        url:
+          process.env.SSO_MEDIAWIKI_URL || 'http://mediawiki.hydroline.local',
+        callbackUrl:
+          process.env.SSO_MEDIAWIKI_CALLBACK_URL ||
+          'http://mediawiki.hydroline.local/sso/callback',
+        secret:
+          process.env.SSO_MEDIAWIKI_SECRET ||
+          'mediawiki-sso-secret-请在生产环境中修改',
       },
     },
   },
@@ -137,20 +179,22 @@ export default {
     prefix: 'api',
     version: 'v1',
     documentation: {
-      enabled: process.env.API_DOCS_ENABLED !== 'false' && process.env.NODE_ENV !== 'production',
+      enabled:
+        process.env.API_DOCS_ENABLED !== 'false' &&
+        process.env.NODE_ENV !== 'production',
       title: 'Hydroline Services API',
       description: 'Minecraft 服务器聚合信息服务平台 API 文档',
       version: '1.0.0',
       path: 'docs',
       tags: [
-        { name: '系统状态', description: '应用健康状况检查' },
-        { name: '认证', description: '用户认证、登录、注册、OAuth等相关接口' },
+        { name: '项目状态', description: '项目状况检查' },
+        { name: '认证', description: '用户认证、登录、注册、OAuth 等相关接口' },
         { name: '玩家管理', description: '玩家账户、资料管理、游戏数据等接口' },
         { name: '角色管理', description: '角色创建、编辑、权限分配等接口' },
         { name: '权限管理', description: '权限定义、资源管理等接口' },
         { name: '审计日志', description: '操作记录、安全审计等接口' },
         { name: '玩家状态', description: '玩家在线状态、游戏状态管理' },
-        { name: '玩家类型', description: '玩家分类、VIP等级管理' },
+        { name: '玩家类型', description: '玩家分类管理' },
         { name: '玩家联系', description: '玩家联系方式、社交账号管理' },
       ],
     },
@@ -158,8 +202,8 @@ export default {
 
   // ===== 前端配置 =====
   frontend: {
-    url: process.env.FRONTEND_URL || 'http://localhost:8080',
-    adminUrl: process.env.ADMIN_FRONTEND_URL || 'http://localhost:8081',
+    url: process.env.FRONTEND_URL || 'http://localhost:5173',
+    adminUrl: process.env.ADMIN_FRONTEND_URL || 'http://localhost:5174',
   },
 
   // ===== Minecraft 相关配置 =====
@@ -169,7 +213,8 @@ export default {
       defaultStatus: '正常',
       defaultType: '普通玩家',
       idValidation: {
-        uuidPattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        uuidPattern:
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
         usernamePattern: /^[a-zA-Z0-9_]{3,16}$/,
       },
     },

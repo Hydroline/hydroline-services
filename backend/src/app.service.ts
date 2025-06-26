@@ -3,13 +3,17 @@ import config from './config';
 
 @Injectable()
 export class AppService {
-  getAppStatus() {
+  getServerInfo() {
     return {
-      name: config.app.name,
-      version: config.app.version,
+      appName: config.app.name,
+      appVersion: config.app.version,
       description: config.app.description,
-      status: 'ok',
-      timestamp: new Date().toISOString(),
+      timezone: config.server.timezone,
+      location: config.server.location,
+      api: {
+        version: config.api.version,
+        title: config.api.documentation.title,
+      },
     };
   }
-} 
+}

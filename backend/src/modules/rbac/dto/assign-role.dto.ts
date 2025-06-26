@@ -17,4 +17,4 @@ export class AssignRoleDto {
   @IsOptional()
   @IsDateString()
   expiresAt?: string;
-} 
+}

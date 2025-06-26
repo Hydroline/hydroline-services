@@ -12,10 +12,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { AuditModule } from '../audit/audit.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    forwardRef(() => AuditModule),
-  ],
+  imports: [PrismaModule, forwardRef(() => AuditModule)],
   controllers: [
     PlayerController,
     PlayerStatusController,
@@ -31,4 +28,4 @@ import { AuditModule } from '../audit/audit.module';
   ],
   exports: [PlayerService, PlayerAuditService],
 })
-export class PlayerModule {} 
+export class PlayerModule {}

@@ -37,4 +37,4 @@ export class QueryRoleDto {
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   isSystem?: boolean;
-} 
+}

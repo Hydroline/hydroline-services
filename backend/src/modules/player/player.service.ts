@@ -1,8 +1,17 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
-import { QueryPlayerDto, PlayerSortBy, SortOrder } from './dto/query-player.dto';
+import {
+  QueryPlayerDto,
+  PlayerSortBy,
+  SortOrder,
+} from './dto/query-player.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { PlayerAuditService } from './player-audit.service';
 import * as bcrypt from 'bcrypt';
@@ -49,7 +58,10 @@ export class PlayerService {
   /**
    * 验证密码
    */
-  async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  async validatePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
@@ -73,11 +85,14 @@ export class PlayerService {
       throw new BadRequestException('当前密码错误');
     }
 
-    const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
-    
+    const hashedNewPassword = await bcrypt.hash(
+      changePasswordDto.newPassword,
+      10,
+    );
+
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
-      data: { 
+      data: {
         password: hashedNewPassword,
         tokenVersion: { increment: 1 }, // 使所有现有token失效
       },
@@ -100,15 +115,15 @@ export class PlayerService {
    * 创建新玩家（同时创建User和MinecraftPlayer）
    */
   async create(createPlayerDto: CreatePlayerDto, operatorId?: string) {
-    const { 
-      username, 
-      email, 
-      password, 
-      playerId, 
-      playerNick, 
-      statusId, 
-      typeId, 
-      ...otherData 
+    const {
+      username,
+      email,
+      password,
+      playerId,
+      playerNick,
+      statusId,
+      typeId,
+      ...otherData
     } = createPlayerDto;
 
     // 检查用户名是否已存在
@@ -163,8 +178,12 @@ export class PlayerService {
             userId: user.id,
             statusId: defaultStatus,
             typeId: defaultType,
-            joinedAt: otherData.joinedAt ? new Date(otherData.joinedAt) : new Date(),
-            lastSeenAt: otherData.lastSeenAt ? new Date(otherData.lastSeenAt) : null,
+            joinedAt: otherData.joinedAt
+              ? new Date(otherData.joinedAt)
+              : new Date(),
+            lastSeenAt: otherData.lastSeenAt
+              ? new Date(otherData.lastSeenAt)
+              : null,
             isActive: otherData.isActive ?? true,
             metadata: otherData.metadata || {},
           },
@@ -179,10 +198,10 @@ export class PlayerService {
       playerId: result.user.id,
       operatorId,
       action: 'CREATE_PLAYER',
-      newValue: { 
-        username: result.user.username, 
+      newValue: {
+        username: result.user.username,
         playerId: result.minecraftPlayer?.playerId,
-        playerNick: result.minecraftPlayer?.playerNick 
+        playerNick: result.minecraftPlayer?.playerNick,
       },
       reason: '创建新玩家账户',
     });
@@ -318,9 +337,13 @@ export class PlayerService {
   /**
    * 更新玩家信息（包含复杂的主ID迁移逻辑）
    */
-  async update(id: string, updatePlayerDto: UpdatePlayerDto, operatorId?: string) {
+  async update(
+    id: string,
+    updatePlayerDto: UpdatePlayerDto,
+    operatorId?: string,
+  ) {
     const existingPlayer = await this.findOne(id);
-    
+
     const { playerId, ...otherUpdates } = updatePlayerDto;
 
     // 如果只是普通更新，不涉及playerId变更
@@ -339,7 +362,9 @@ export class PlayerService {
           playerNick: otherUpdates.playerNick,
           statusId: otherUpdates.statusId,
           typeId: otherUpdates.typeId,
-          lastSeenAt: otherUpdates.lastSeenAt ? new Date(otherUpdates.lastSeenAt) : undefined,
+          lastSeenAt: otherUpdates.lastSeenAt
+            ? new Date(otherUpdates.lastSeenAt)
+            : undefined,
           isActive: otherUpdates.isActive,
           metadata: otherUpdates.metadata,
         },
@@ -359,17 +384,22 @@ export class PlayerService {
     }
 
     // 如果涉及玩家ID变更，执行复杂的迁移逻辑
-    return this.updatePlayerIdWithMigration(existingPlayer.playerId, playerId, otherUpdates, operatorId);
+    return this.updatePlayerIdWithMigration(
+      existingPlayer.playerId,
+      playerId,
+      otherUpdates,
+      operatorId,
+    );
   }
 
   /**
    * 复杂的主ID迁移逻辑
    */
   private async updatePlayerIdWithMigration(
-    playerId: string, 
-    newPlayerId: string, 
-    otherUpdates: any, 
-    operatorId?: string
+    playerId: string,
+    newPlayerId: string,
+    otherUpdates: any,
+    operatorId?: string,
   ) {
     const existingPlayer = await this.findOne(playerId);
     const oldPlayerId = existingPlayer.playerId;
@@ -398,7 +428,7 @@ export class PlayerService {
       if (playerToMerge && playerToMerge.id !== playerId) {
         // 3. 如果新ID存在于其他玩家的alternative_ids中，需要合并数据
         await this.mergePlayerData(tx, playerId, playerToMerge.id, operatorId);
-        
+
         // 删除被合并的玩家记录
         await tx.minecraftPlayer.delete({
           where: { id: playerToMerge.id },
@@ -422,12 +452,14 @@ export class PlayerService {
       });
 
       // 6. 更新主表的playerId
-      const updateData: any = { 
+      const updateData: any = {
         playerId: newPlayerId,
-        ...otherUpdates 
+        ...otherUpdates,
       };
-      if (updateData.joinedAt) updateData.joinedAt = new Date(updateData.joinedAt);
-      if (updateData.lastSeenAt) updateData.lastSeenAt = new Date(updateData.lastSeenAt);
+      if (updateData.joinedAt)
+        updateData.joinedAt = new Date(updateData.joinedAt);
+      if (updateData.lastSeenAt)
+        updateData.lastSeenAt = new Date(updateData.lastSeenAt);
 
       const updatedPlayer = await tx.minecraftPlayer.update({
         where: { id: playerId },
@@ -443,14 +475,17 @@ export class PlayerService {
       });
 
       // 记录审计日志
-      await this.auditService.logPlayerAction({
-        playerId: updatedPlayer.id,
-        operatorId,
-        action: 'MIGRATE_PLAYER_ID',
-        oldValue: { playerId: oldPlayerId },
-        newValue: { playerId: newPlayerId },
-        reason: `主ID迁移: ${oldPlayerId} -> ${newPlayerId}`,
-      }, tx);
+      await this.auditService.logPlayerAction(
+        {
+          playerId: updatedPlayer.id,
+          operatorId,
+          action: 'MIGRATE_PLAYER_ID',
+          oldValue: { playerId: oldPlayerId },
+          newValue: { playerId: newPlayerId },
+          reason: `主ID迁移: ${oldPlayerId} -> ${newPlayerId}`,
+        },
+        tx,
+      );
 
       return updatedPlayer;
     });
@@ -459,7 +494,12 @@ export class PlayerService {
   /**
    * 合并玩家数据
    */
-  private async mergePlayerData(tx: any, targetPlayerId: string, sourcePlayerId: string, operatorId?: string) {
+  private async mergePlayerData(
+    tx: any,
+    targetPlayerId: string,
+    sourcePlayerId: string,
+    operatorId?: string,
+  ) {
     // 迁移联系信息
     await tx.playerContactInfo.updateMany({
       where: { playerId: sourcePlayerId },
@@ -485,13 +525,16 @@ export class PlayerService {
     });
 
     // 记录合并日志
-    await this.auditService.logPlayerAction({
-      playerId: targetPlayerId,
-      operatorId,
-      action: 'MERGE_PLAYER_DATA',
-      newValue: { mergedFromPlayerId: sourcePlayerId },
-      reason: '玩家数据合并',
-    }, tx);
+    await this.auditService.logPlayerAction(
+      {
+        playerId: targetPlayerId,
+        operatorId,
+        action: 'MERGE_PLAYER_DATA',
+        newValue: { mergedFromPlayerId: sourcePlayerId },
+        reason: '玩家数据合并',
+      },
+      tx,
+    );
   }
 
   /**
@@ -569,7 +612,9 @@ export class PlayerService {
    * 验证状态存在
    */
   private async validateStatusExists(statusId: string) {
-    const status = await this.prisma.playerStatus.findUnique({ where: { id: statusId } });
+    const status = await this.prisma.playerStatus.findUnique({
+      where: { id: statusId },
+    });
     if (!status) {
       throw new BadRequestException('玩家状态不存在');
     }
@@ -579,7 +624,9 @@ export class PlayerService {
    * 验证类型存在
    */
   private async validateTypeExists(typeId: string) {
-    const type = await this.prisma.playerType.findUnique({ where: { id: typeId } });
+    const type = await this.prisma.playerType.findUnique({
+      where: { id: typeId },
+    });
     if (!type) {
       throw new BadRequestException('玩家类型不存在');
     }
@@ -598,4 +645,4 @@ export class PlayerService {
       isActive: player.isActive,
     };
   }
-} 
+}

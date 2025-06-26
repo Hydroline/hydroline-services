@@ -8,7 +8,8 @@ import {
   Delete,
   Query,
   UseGuards,
-  Request,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,32 +19,32 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { PermissionService } from './permission.service';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { QueryPermissionDto } from './dto/query-permission.dto';
-import { JwtAuthGuard } from '../core/auth/jwt.strategy';
-import { PermissionsGuard } from '../core/guards/roles.guard';
-import { Permissions } from '../core/decorators/roles.decorator';
+import {
+  CreatePermissionDto,
+  UpdatePermissionDto,
+  QueryPermissionDto,
+} from './dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RbacGuard } from '../core/guards';
+import { Permissions, CurrentUser } from '../core/decorators';
 
 @ApiTags('权限管理')
-@ApiBearerAuth('JWT')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('permissions')
+@UseGuards(AuthGuard('jwt'), RbacGuard)
+@ApiBearerAuth()
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Post()
-  @ApiOperation({ summary: '创建权限' })
-  @ApiResponse({ status: 201, description: '权限创建成功' })
-  @Permissions('permission:write')
-  create(@Body() createPermissionDto: CreatePermissionDto, @Request() req) {
-    return this.permissionService.create(createPermissionDto, req.user.id);
+  @Permissions('role:admin')
+  @ApiOperation({ summary: '创建新权限' })
+  create(@Body() createDto: CreatePermissionDto, @CurrentUser() user) {
+    return this.permissionService.create(createDto, user.id);
   }
 
   @Get()
-  @ApiOperation({ summary: '获取权限列表' })
-  @ApiResponse({ status: 200, description: '查询成功' })
-  @Permissions('permission:read')
+  @Permissions('role:read')
+  @ApiOperation({ summary: '查询权限列表' })
   findAll(@Query() query: QueryPermissionDto) {
     return this.permissionService.findAll(query);
   }
@@ -74,24 +75,21 @@ export class PermissionController {
   }
 
   @Patch(':id')
+  @Permissions('role:admin')
   @ApiOperation({ summary: '更新权限' })
-  @ApiResponse({ status: 200, description: '更新成功' })
-  @ApiParam({ name: 'id', description: '权限ID' })
-  @Permissions('permission:write')
   update(
     @Param('id') id: string,
-    @Body() updatePermissionDto: UpdatePermissionDto,
-    @Request() req,
+    @Body() updateDto: UpdatePermissionDto,
+    @CurrentUser() user,
   ) {
-    return this.permissionService.update(id, updatePermissionDto, req.user.id);
+    return this.permissionService.update(id, updateDto, user.id);
   }
 
   @Delete(':id')
+  @Permissions('role:admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: '删除权限' })
-  @ApiResponse({ status: 200, description: '删除成功' })
-  @ApiParam({ name: 'id', description: '权限ID' })
-  @Permissions('permission:delete')
-  remove(@Param('id') id: string, @Request() req) {
-    return this.permissionService.remove(id, req.user.id);
+  remove(@Param('id') id: string, @CurrentUser() user) {
+    return this.permissionService.remove(id, user.id);
   }
-} 
+}

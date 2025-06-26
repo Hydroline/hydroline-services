@@ -3,70 +3,40 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  HttpException,
-  HttpStatus,
   Logger,
+  HttpException,
 } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 
 /**
  * 异常拦截器
- * 捕获所有未处理的异常，统一格式为 { code: xxx, message: yyy, error: zzz }
+ * 主要用于记录异常日志，实际的异常响应格式由全局异常过滤器处理
  */
 @Injectable()
 export class ExceptionInterceptor implements NestInterceptor {
   private readonly logger = new Logger(ExceptionInterceptor.name);
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const ctx = context.switchToHttp();
+    const request = ctx.getRequest();
+
     return next.handle().pipe(
+      tap(() => {
+        // 可以在这里记录成功请求的日志
+        // this.logger.log(`${request.method} ${request.url} - Success`);
+      }),
       catchError((error) => {
-        let status = HttpStatus.INTERNAL_SERVER_ERROR;
-        let errorResponse: any = {
-          code: 500,
-          message: '服务器内部错误',
-          error: error.name || 'InternalServerError',
-        };
-
-        // 处理 HttpException
-        if (error instanceof HttpException) {
-          status = error.getStatus();
-          const response = error.getResponse();
-
-          if (typeof response === 'object') {
-            errorResponse = {
-              code: status,
-              message: response['message'] || error.message,
-              error: response['error'] || error.name,
-            };
-
-            // 对于验证错误特殊处理
-            if (Array.isArray(response['message'])) {
-              errorResponse.message = response['message'][0];
-              errorResponse.details = response['message'];
-            }
-          } else {
-            errorResponse = {
-              code: status,
-              message: response || error.message,
-              error: error.name,
-            };
-          }
+        // 只记录500及以上的服务器错误或非HTTP异常
+        if (!(error instanceof HttpException) || error.getStatus() >= 500) {
+          this.logger.error(
+            `${request.method} ${request.url} - ${error.message}`,
+            error.stack,
+          );
         }
 
-        // 记录错误日志
-        this.logger.error(
-          `[${errorResponse.code}] ${errorResponse.message}`,
-          error.stack,
-        );
-
-        // 转换为标准错误响应
-        return throwError(() => ({
-          code: errorResponse.code,
-          message: errorResponse.message,
-          error: errorResponse.error,
-          ...(errorResponse.details ? { details: errorResponse.details } : {}),
-        }));
+        // 重新抛出异常，让全局异常过滤器处理
+        throw error;
       }),
     );
   }
