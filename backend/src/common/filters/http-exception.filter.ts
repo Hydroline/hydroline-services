@@ -55,12 +55,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     // 返回统一格式的错误响应
+    const now = new Date();
     response.status(status).json({
       code: status,
       status: 'error',
       message: message,
       data: data,
-      timestamp: Date.now(),
+      timestamp: now.getTime(),
+      isoTime: now.toISOString(),
     });
   }
 }

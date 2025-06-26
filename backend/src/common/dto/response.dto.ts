@@ -15,6 +15,9 @@ export class BaseResponseDto<T = any> {
 
   @ApiProperty({ example: 1640995200000, description: '时间戳' })
   timestamp: number;
+
+  @ApiProperty({ example: '2021-12-31T16:00:00.000Z', description: 'ISO 时间格式' })
+  isoTime: string;
 }
 
 export class ErrorResponseDto {
@@ -32,6 +35,9 @@ export class ErrorResponseDto {
 
   @ApiProperty({ example: 1640995200000, description: '时间戳' })
   timestamp: number;
+
+  @ApiProperty({ example: '2021-12-31T16:00:00.000Z', description: 'ISO 时间格式' })
+  isoTime: string;
 }
 
 export class SuccessResponseDto<T = any> extends BaseResponseDto<T> {

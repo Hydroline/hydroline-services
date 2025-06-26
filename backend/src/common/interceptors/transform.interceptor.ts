@@ -15,11 +15,12 @@ export interface Response<T> {
   message: string | null;
   data: T;
   timestamp: number;
+  isoTime: string;
 }
 
 /**
  * 统一响应体拦截器
- * 将所有正常返回统一包装为 { code: 200, status: "success", message: null, data: any, timestamp: number }
+ * 将所有正常返回统一包装为 { code: 200, status: "success", message: null, data: any, timestamp: number, isoTime: string }
  */
 @Injectable()
 export class TransformInterceptor<T>
@@ -39,12 +40,14 @@ export class TransformInterceptor<T>
           context.getHandler(),
         );
 
+        const now = new Date();
         return {
           code: 200,
           status: 'success',
           message: successMessage || null,
           data,
-          timestamp: Date.now(),
+          timestamp: now.getTime(),
+          isoTime: now.toISOString(),
         };
       }),
     );
