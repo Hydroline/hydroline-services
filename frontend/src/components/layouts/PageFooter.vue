@@ -9,7 +9,7 @@ import HydrolineLogo from '@/assets/logo/Hydroline_Logo_Normal.svg'
   >
     <div class="page-footer-mark flex items-center select-none">
       <HydrolineLogo class="h-12" />
-      <div class="page-footer-mark__text text-xl font-semibold">Coding, Creation, Interest</div>
+      <div class="page-footer-mark__text text-xl font-semibold">Coding, Creating, Exploring</div>
     </div>
     <div class="page-footer-info text-right">
       <div
