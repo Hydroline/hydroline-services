@@ -36,8 +36,7 @@ export default {
   // ===== 数据库配置 =====
   db: {
     url:
-      process.env.DATABASE_URL ||
-      'postgresql://hydrolineTest1:T3R7Jb72Rfnn@server5.aurlemon.top:5432/hydrolineTest1',
+      process.env.DATABASE_URL,
   },
 
   // ===== JWT 认证配置 =====
