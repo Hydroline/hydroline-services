@@ -59,6 +59,7 @@
     "prettier": "^3.5.3",
     "sass": "^1.89.0",
     "sass-loader": "^16.0.5",
+    "shadcn-vue": "^2.2.0",
     "tailwindcss": "^4.1.7",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
