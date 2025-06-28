@@ -5,13 +5,17 @@
   "scripts": {
     "admin:dev": "pnpm --filter hydroline-services-admin dev",
     "frontend:dev": "pnpm --filter hydroline-services-frontend dev",
-    "backend:dev": "pnpm --filter hydroline-backend start:dev",
+    "backend:dev": "pnpm --filter hydroline-services-backend start:dev",
     "admin:build": "pnpm --filter hydroline-services-admin build",
     "frontend:build": "pnpm --filter hydroline-services-frontend build",
-    "backend:build": "pnpm --filter hydroline-backend build",
+    "backend:build": "pnpm --filter hydroline-services-backend build",
     "admin:start": "pnpm --filter hydroline-services-admin preview",
     "frontend:start": "pnpm --filter hydroline-services-frontend preview",
-    "backend:start": "pnpm --filter hydroline-backend start"
+    "backend:start": "pnpm --filter hydroline-services-backend start",
+    "db:push": "pnpm --filter hydroline-services-backend db:push",
+    "db:migrate": "pnpm --filter hydroline-services-backend db:migrate",
+    "db:generate": "pnpm --filter hydroline-services-backend db:generate",
+    "db:seed": "pnpm --filter hydroline-services-backend db:seed"
   },
   "author": "Hydroline",
   "license": "AGPL-3.0-only",
