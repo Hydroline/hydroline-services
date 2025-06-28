@@ -3,21 +3,25 @@ import dayjs from 'dayjs'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { config } from '@/config'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import LoginDialog from '@/components/auth/LoginDialog.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const currentTime = ref(dayjs())
+const showLoginDialog = ref(false)
 
 // 计算属性
 const user = computed(() => authStore.user)
@@ -55,9 +59,15 @@ const goToProfile = () => {
   router.push('/profile')
 }
 
-// 跳转到登录页面
-const goToLogin = () => {
-  router.push('/login')
+// 打开登录对话框
+const openLoginDialog = () => {
+  showLoginDialog.value = true
+}
+
+// 处理登录成功
+const handleLoginSuccess = (userData: any) => {
+  console.log('登录成功:', userData)
+  // 对话框会自动关闭
 }
 
 onMounted(() => {
@@ -82,19 +92,22 @@ onUnmounted(() => {
     <div
       class="page-header-router font-semibold text-text-emphasized tracking-widest"
     >
-      {{ $route.meta.title }}
+      <template v-if="!$route.meta.hideTitle">
+        {{ $route.meta.title }}
+      </template>
     </div>
     <div
       class="page-header-user text-right flex justify-end items-center gap-4"
     >
       <!-- 未登录状态 -->
       <div v-if="!isAuthenticated" class="flex items-center gap-2">
-        <button 
-          @click="goToLogin"
-          class="text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+        <Button
+          @click="openLoginDialog"
+          size="sm"
+          class="px-4 py-2"
         >
           登录
-        </button>
+        </Button>
       </div>
 
       <!-- 已登录状态 -->
@@ -117,19 +130,25 @@ onUnmounted(() => {
 
         <!-- 用户下拉菜单 -->
         <DropdownMenu>
-          <DropdownMenuTrigger class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+          <DropdownMenuTrigger
+            class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <div class="page-header-user__name font-medium">
               {{ user?.displayName || user?.username || 'Unknown' }}
             </div>
             <div class="page-header-user__avatar">
               <Avatar>
                 <AvatarFallback>
-                  {{ user?.displayName?.charAt(0) || user?.username?.charAt(0) || '?' }}
+                  {{
+                    user?.displayName?.charAt(0) ||
+                    user?.username?.charAt(0) ||
+                    '?'
+                  }}
                 </AvatarFallback>
               </Avatar>
             </div>
           </DropdownMenuTrigger>
-          
+
           <DropdownMenuContent align="end" class="w-56">
             <DropdownMenuLabel class="font-normal">
               <div class="flex flex-col space-y-1">
@@ -141,22 +160,28 @@ onUnmounted(() => {
                 </p>
               </div>
             </DropdownMenuLabel>
-            
+
             <DropdownMenuSeparator />
-            
+
             <DropdownMenuItem @click="goToProfile" class="cursor-pointer">
               <span class="material-icons mr-2 text-sm">person</span>
               个人资料
             </DropdownMenuItem>
-            
-            <DropdownMenuItem @click="() => router.push('/settings')" class="cursor-pointer">
+
+            <DropdownMenuItem
+              @click="() => router.push('/settings')"
+              class="cursor-pointer"
+            >
               <span class="material-icons mr-2 text-sm">settings</span>
               设置
             </DropdownMenuItem>
-            
+
             <DropdownMenuSeparator />
-            
-            <DropdownMenuItem @click="handleLogout" class="cursor-pointer text-red-600 focus:text-red-600">
+
+            <DropdownMenuItem
+              @click="handleLogout"
+              class="cursor-pointer text-red-600 focus:text-red-600"
+            >
               <span class="material-icons mr-2 text-sm">logout</span>
               退出登录
             </DropdownMenuItem>
@@ -164,6 +189,12 @@ onUnmounted(() => {
         </DropdownMenu>
       </div>
     </div>
+
+    <!-- 登录对话框 -->
+    <LoginDialog 
+      v-model:open="showLoginDialog"
+      @success="handleLoginSuccess"
+    />
   </header>
 </template>
 

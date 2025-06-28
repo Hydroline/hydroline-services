@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
 import { authApi, type UserInfo, type LoginData, type RegisterData } from '@/api/auth'
+import { config } from '@/config'
 import { authStorage } from '@/lib/storage'
 import { toast } from 'vue-sonner'
 
@@ -39,15 +40,8 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading.value = true
     try {
       const response = await authApi.login(data)
-      console.log('登录API响应:', response.data)
       
-      // 安全地解构数据 - 注意API响应结构
-      const apiResponse = response.data
-      if (!apiResponse || !apiResponse.data) {
-        throw new Error('登录响应数据为空')
-      }
-      
-      const { user: userData, accessToken, refreshToken } = apiResponse.data
+      const { user: userData, accessToken, refreshToken } = response.data.data
       
       if (!userData) {
         throw new Error('用户信息为空')
@@ -88,15 +82,8 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading.value = true
     try {
       const response = await authApi.register(data)
-      console.log('注册API响应:', response.data)
       
-      // 安全地解构数据 - 注意API响应结构
-      const apiResponse = response.data
-      if (!apiResponse || !apiResponse.data) {
-        throw new Error('注册响应数据为空')
-      }
-      
-      const { user: userData, accessToken, refreshToken } = apiResponse.data
+      const { user: userData, accessToken, refreshToken } = response.data.data
       
       if (!userData) {
         throw new Error('用户信息为空')

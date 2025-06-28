@@ -12,18 +12,18 @@ import { Toaster } from '@/components/ui/sonner'
     <PageHeader />
     <PageContent />
     <PageFooter />
-    
-    <!-- 全局 Toast 通知 -->
-    <Toaster 
-      position="top-right"
-      :toast-options="{
-        duration: 4000,
-        classes: {
-          toast: 'font-medium',
-          title: 'text-sm',
-          description: 'text-xs opacity-90'
-        }
-      }"
-    />
   </div>
+
+  <Toaster
+    position="top-right"
+    class="z-100"
+    :toast-options="{
+      duration: 4000,
+      classes: {
+        toast: 'font-medium',
+        title: 'text-sm',
+        description: 'text-xs',
+      },
+    }"
+  />
 </template>
