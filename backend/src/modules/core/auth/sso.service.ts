@@ -48,7 +48,6 @@ export class SSOService {
 
       return payload;
     } catch (error) {
-      console.warn('SSO token validation failed:', error.message);
       return null;
     }
   }

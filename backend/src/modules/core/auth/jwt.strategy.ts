@@ -34,13 +34,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       return user;
     } catch (error) {
-      // 记录详细错误信息（不包含敏感数据）
-      console.error('JWT验证失败:', {
-        error: error.message,
-        userId: payload?.sub,
-        timestamp: new Date().toISOString(),
-      });
-
       if (error instanceof UnauthorizedException) {
         throw error;
       }

@@ -116,7 +116,6 @@ export class AuthService {
       const { password: _, ...result } = user;
       return result;
     } catch (error) {
-      console.error('User validation error:', error);
       throw error;
     }
   }
@@ -270,14 +269,8 @@ export class AuthService {
           OR: [{ expiresAt: { lt: new Date() } }, { isActive: false }],
         },
       });
-
-      if (result.count > 0) {
-        console.log(`清理了 ${result.count} 个过期的会话`);
-      }
-
       return result;
     } catch (error) {
-      console.error('清理过期会话时出错:', error);
       throw error;
     }
   }

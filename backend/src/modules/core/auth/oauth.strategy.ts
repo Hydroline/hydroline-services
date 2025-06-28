@@ -76,7 +76,6 @@ export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
 
       return userData;
     } catch (error) {
-      console.error('Failed to fetch user info from Microsoft Graph:', error);
       throw new Error('无法获取用户信息，请稍后重试');
     }
   }
