@@ -1,3 +1,14 @@
+<script lang="ts" setup>
+import { onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+
+onMounted(() => {
+  console.log('仪表盘页面加载，用户:', authStore.user?.username)
+})
+</script>
+
 <template>
   <div class="page-dashboard my-8 h-full">
     <div class="page-item w-full h-54 relative bg-white rounded-2xl overflow-hidden shadow-[0_16px_64px_var(--border-color-base)]">

@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from './stores/auth'
 
 import utcPlugin from 'dayjs/plugin/utc'
 import 'dayjs/locale/zh-cn'
@@ -17,7 +18,19 @@ dayjs.extend(utcPlugin)
 
 const initApp = async (): Promise<void> => {
   const app = createApp(App)
-  app.use(router).use(createPinia())
+  const pinia = createPinia()
+  
+  app.use(pinia)
+  app.use(router)
+  
+  // 初始化认证状态
+  const authStore = useAuthStore()
+  try {
+    await authStore.initAuth()
+  } catch (error) {
+    console.error('认证初始化失败:', error)
+  }
+  
   app.mount('#app')
 }
 
