@@ -38,6 +38,8 @@ import {
   MessageResponseDto,
   CleanupResponseDto,
   SSOUrlResponseDto,
+  OAuthProvidersResponseDto,
+  OAuthProviderDto,
 } from './dto';
 import { 
   CurrentUser, 
@@ -47,6 +49,7 @@ import {
   ApiStandardResponses 
 } from '../../../common';
 import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
+import config from '../../../config';
 
 @ApiTags('认证')
 @ApiExtraModels(
@@ -60,6 +63,8 @@ import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
   MessageResponseDto,
   CleanupResponseDto,
   SSOUrlResponseDto,
+  OAuthProvidersResponseDto,
+  OAuthProviderDto,
 )
 @Controller('auth')
 export class AuthController {
@@ -67,6 +72,39 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly ssoService: SSOService,
   ) {}
+
+  @ApiOperation({ summary: '获取可用的OAuth提供商列表' })
+  @ApiStandardResponses(OAuthProvidersResponseDto, 'OAuth提供商列表获取成功')
+  @Get('oauth/providers')
+  @SuccessMessage('OAuth提供商列表获取成功')
+  getOAuthProviders() {
+    const providers: OAuthProviderDto[] = [];
+
+    // 检查配置中启用的OAuth提供商
+    const oauthConfig = config.oauth.providers;
+
+    // 提供商映射表
+    const providerNames: Record<string, string> = {
+      microsoft: 'Microsoft',
+      qq: 'QQ',
+      wechat: '微信',
+      discord: 'Discord',
+    };
+
+    // 遍历配置，只返回启用的提供商
+    Object.entries(oauthConfig).forEach(([key, provider]) => {
+      if (provider.enabled) {
+        providers.push({
+          id: key,
+          name: providerNames[key] || key,
+          enabled: true,
+          loginUrl: `/api/auth/oauth/${key}`,
+        });
+      }
+    });
+
+    return { providers };
+  }
 
   @ApiOperation({ summary: '用户注册' })
   @ApiStandardResponses(RegisterResponseDto, '注册成功')

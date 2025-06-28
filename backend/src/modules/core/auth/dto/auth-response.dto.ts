@@ -100,4 +100,30 @@ export class RegisterResponseDto {
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' 
   })
   refreshToken: string;
+}
+
+export class OAuthProviderDto {
+  @ApiProperty({ 
+    description: '提供商标识', 
+    example: 'microsoft',
+    enum: ['microsoft', 'qq', 'wechat', 'discord']
+  })
+  id: string;
+
+  @ApiProperty({ description: '提供商名称', example: 'Microsoft' })
+  name: string;
+
+  @ApiProperty({ description: '是否启用', example: true })
+  enabled: boolean;
+
+  @ApiProperty({ description: '登录URL', example: '/api/auth/oauth/microsoft' })
+  loginUrl: string;
+}
+
+export class OAuthProvidersResponseDto {
+  @ApiProperty({ 
+    description: '可用的OAuth提供商列表', 
+    type: [OAuthProviderDto] 
+  })
+  providers: OAuthProviderDto[];
 } 
