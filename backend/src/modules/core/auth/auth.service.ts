@@ -123,9 +123,8 @@ export class AuthService {
   async login(user: any, deviceInfo?: string, ipAddress?: string) {
     const tokenId = uuidv4();
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7天后过期
-
-    // 创建session记录
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    
     await this.prisma.session.create({
       data: {
         userId: user.id,
@@ -140,13 +139,14 @@ export class AuthService {
       sub: user.id,
       username: user.username,
       tokenVersion: user.tokenVersion,
-      jti: tokenId, // JWT ID，用于session追踪
+      jti: tokenId,
     };
 
     return {
       user: {
         id: user.id,
         username: user.username,
+        displayName: user.displayName,
         email: user.email,
         roles: user.userRoles?.map((ur) => ur.role.name) || [],
       },

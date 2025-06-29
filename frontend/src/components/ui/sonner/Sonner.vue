@@ -9,9 +9,19 @@ const props = defineProps<ToasterProps>()
     class="toaster group"
     v-bind="props"
     :style="{
-      '--normal-bg': 'var(--popover)',
-      '--normal-text': 'var(--popover-foreground)',
-      '--normal-border': 'var(--border)',
+      '--normal-bg': 'hsl(var(--background))',
+      '--normal-text': 'hsl(var(--foreground))',
+      '--normal-border': 'hsl(var(--border))',
+      '--error-bg': 'hsl(var(--destructive))',
+      '--error-text': 'hsl(var(--destructive-foreground))',
+      '--success-bg': 'hsl(142, 76%, 36%)',
+      '--success-text': 'hsl(0, 0%, 100%)',
     }"
   />
 </template>
+
+<style scoped>
+:deep(.toaster) {
+  z-index: 9999 !important;
+}
+</style>

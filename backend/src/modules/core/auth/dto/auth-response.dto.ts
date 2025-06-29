@@ -4,6 +4,9 @@ export class UserDto {
   @ApiProperty({ description: '用户ID', example: 'user-123' })
   id: string;
 
+  @ApiProperty({ description: '用户显示名称', example: '测试用户' })
+  displayName: string;
+
   @ApiProperty({ description: '用户名', example: 'testuser' })
   username: string;
 

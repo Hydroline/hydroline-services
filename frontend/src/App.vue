@@ -16,11 +16,11 @@ import { Toaster } from '@/components/ui/sonner'
 
   <Toaster
     position="top-right"
-    class="z-100"
+    class="z-10000"
     :toast-options="{
       duration: 4000,
       classes: {
-        toast: 'font-medium',
+        toast: 'font-medium !bg-surface-0 !shadow-lg',
         title: 'text-sm',
         description: 'text-xs',
       },

@@ -30,6 +30,7 @@ export default [
       },
     },
     rules: {
+      'no-empty': 'warn',
       'no-unused-vars': 'off',
       'no-self-assign': 'warn',
       '@typescript-eslint/no-explicit-any': 'off',
@@ -56,6 +57,7 @@ export default [
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
+      'no-empty': 'warn',
       'no-unused-vars': 'off',
       'no-unreachable': 'warn',
       'vue/html-indent': 'off',

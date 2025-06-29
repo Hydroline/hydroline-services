@@ -54,12 +54,16 @@ export interface OAuthProvider {
 export const authApi = {
   // 登录
   async login(data: LoginData) {
-    return http.post<AuthResponse>('/api/auth/login', data)
+    return http.post<AuthResponse>('/api/auth/login', data, {
+      skipErrorHandler: true, // 跳过全局错误处理，由组件自行处理
+    })
   },
 
   // 注册
   async register(data: RegisterData) {
-    return http.post<AuthResponse>('/api/auth/register', data)
+    return http.post<AuthResponse>('/api/auth/register', data, {
+      skipErrorHandler: true, // 跳过全局错误处理，由组件自行处理
+    })
   },
 
   // 获取用户信息

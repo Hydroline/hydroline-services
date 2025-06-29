@@ -1,71 +1,67 @@
-<!--
-  仪表盘页面
-  提供系统概览和快速访问功能
--->
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { config } from '@/config'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
-// Store
 const authStore = useAuthStore()
 
-// 状态
 const stats = ref({
   totalUsers: 0,
   onlineUsers: 0,
   serverStatus: 'unknown' as 'online' | 'offline' | 'unknown',
-  lastUpdate: new Date()
+  lastUpdate: new Date(),
 })
 
-// 计算属性
 const user = computed(() => authStore.user)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 
-// 功能卡片配置
 const featureCards = computed(() => [
   {
     title: '玩家管理',
     description: '管理服务器玩家信息和权限',
     icon: 'person',
     path: '/player',
-    enabled: isAuthenticated.value
+    enabled: isAuthenticated.value,
   },
   {
     title: 'Minecraft 服务器',
     description: '查看服务器状态和管理工具',
     icon: 'videogame_asset',
     path: '/minecraft',
-    enabled: true
+    enabled: true,
   },
   {
     title: '个人资料',
     description: '查看和编辑个人信息',
     icon: 'account_circle',
     path: '/profile',
-    enabled: isAuthenticated.value
+    enabled: isAuthenticated.value,
   },
   {
     title: '系统设置',
     description: '应用配置和偏好设置',
     icon: 'settings',
     path: '/settings',
-    enabled: isAuthenticated.value
-  }
+    enabled: isAuthenticated.value,
+  },
 ])
 
-// 加载仪表盘数据
 const loadDashboardData = async () => {
-  // TODO: 从API加载实际数据
   stats.value = {
     totalUsers: 142,
     onlineUsers: 23,
     serverStatus: 'online',
-    lastUpdate: new Date()
+    lastUpdate: new Date(),
   }
 }
 
@@ -81,10 +77,18 @@ onMounted(() => {
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold tracking-tight">
-            {{ isAuthenticated ? `欢迎回来，${user?.displayName || user?.username}` : '欢迎使用 Hydroline Services' }}
+            {{
+              isAuthenticated
+                ? `欢迎回来，${user?.displayName || user?.username}`
+                : '欢迎使用 Hydroline Services'
+            }}
           </h1>
           <p class="text-muted-foreground mt-2">
-            {{ isAuthenticated ? '这里是您的个人仪表盘' : '您可以浏览公开内容，登录以获得完整功能' }}
+            {{
+              isAuthenticated
+                ? '这里是您的个人仪表盘'
+                : '您可以浏览公开内容，登录以获得完整功能'
+            }}
           </p>
         </div>
         <div class="text-right">
@@ -102,7 +106,9 @@ onMounted(() => {
     <div class="stats-section">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
-          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
             <CardTitle class="text-sm font-medium">总用户数</CardTitle>
             <span class="material-icons text-muted-foreground">people</span>
           </CardHeader>
@@ -113,7 +119,9 @@ onMounted(() => {
         </Card>
 
         <Card>
-          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
             <CardTitle class="text-sm font-medium">在线用户</CardTitle>
             <span class="material-icons text-muted-foreground">person</span>
           </CardHeader>
@@ -124,24 +132,36 @@ onMounted(() => {
         </Card>
 
         <Card>
-          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
             <CardTitle class="text-sm font-medium">服务器状态</CardTitle>
-            <span 
+            <span
               class="material-icons"
               :class="{
                 'text-green-600': stats.serverStatus === 'online',
                 'text-red-600': stats.serverStatus === 'offline',
-                'text-gray-600': stats.serverStatus === 'unknown'
+                'text-gray-600': stats.serverStatus === 'unknown',
               }"
             >
-              {{ stats.serverStatus === 'online' ? 'check_circle' : 
-                 stats.serverStatus === 'offline' ? 'error' : 'help' }}
+              {{
+                stats.serverStatus === 'online'
+                  ? 'check_circle'
+                  : stats.serverStatus === 'offline'
+                    ? 'error'
+                    : 'help'
+              }}
             </span>
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold capitalize">
-              {{ stats.serverStatus === 'online' ? '在线' : 
-                 stats.serverStatus === 'offline' ? '离线' : '未知' }}
+              {{
+                stats.serverStatus === 'online'
+                  ? '在线'
+                  : stats.serverStatus === 'offline'
+                    ? '离线'
+                    : '未知'
+              }}
             </div>
             <p class="text-xs text-muted-foreground">Minecraft 服务器状态</p>
           </CardContent>
@@ -155,25 +175,29 @@ onMounted(() => {
     <div class="features-section">
       <h2 class="text-2xl font-semibold mb-6">快速访问</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card 
-          v-for="feature in featureCards" 
+        <Card
+          v-for="feature in featureCards"
           :key="feature.title"
           class="cursor-pointer hover:shadow-md transition-shadow"
           :class="{ 'opacity-50': !feature.enabled }"
         >
           <CardHeader class="pb-3">
             <div class="flex items-center gap-3">
-              <span class="material-icons text-primary text-2xl">{{ feature.icon }}</span>
+              <span class="material-icons text-primary text-2xl">{{
+                feature.icon
+              }}</span>
               <div>
                 <CardTitle class="text-lg">{{ feature.title }}</CardTitle>
-                <CardDescription class="text-sm">{{ feature.description }}</CardDescription>
+                <CardDescription class="text-sm">{{
+                  feature.description
+                }}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent class="pt-0">
-            <Button 
+            <Button
               :disabled="!feature.enabled"
-              variant="outline" 
+              variant="outline"
               class="w-full"
               @click="$router.push(feature.path)"
             >
@@ -202,10 +226,18 @@ onMounted(() => {
             游客可以查看部分公开信息，注册登录后可以享受完整功能。
           </p>
           <div class="flex gap-2">
-            <Button variant="outline" size="sm" onclick="window.open('https://github.com/your-repo', '_blank')">
+            <Button
+              variant="outline"
+              size="sm"
+              onclick="window.open('https://github.com/your-repo', '_blank')"
+            >
               查看源码
             </Button>
-            <Button variant="outline" size="sm" onclick="window.open('/docs', '_blank')">
+            <Button
+              variant="outline"
+              size="sm"
+              onclick="window.open('/docs', '_blank')"
+            >
               查看文档
             </Button>
           </div>
@@ -220,4 +252,4 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
 }
-</style> 
+</style>

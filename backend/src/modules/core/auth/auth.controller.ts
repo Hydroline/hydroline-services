@@ -41,12 +41,12 @@ import {
   OAuthProvidersResponseDto,
   OAuthProviderDto,
 } from './dto';
-import { 
-  CurrentUser, 
-  Permissions, 
-  SuccessMessage, 
+import {
+  CurrentUser,
+  Permissions,
+  SuccessMessage,
   RbacGuard,
-  ApiStandardResponses 
+  ApiStandardResponses,
 } from '../../../common';
 import { SuccessResponseDto, ErrorResponseDto } from '../../../common/dto';
 import config from '../../../config';
@@ -80,10 +80,8 @@ export class AuthController {
   getOAuthProviders() {
     const providers: OAuthProviderDto[] = [];
 
-    // 检查配置中启用的OAuth提供商
     const oauthConfig = config.oauth.providers;
 
-    // 提供商映射表
     const providerNames: Record<string, string> = {
       microsoft: 'Microsoft',
       qq: 'QQ',
@@ -91,7 +89,6 @@ export class AuthController {
       discord: 'Discord',
     };
 
-    // 遍历配置，只返回启用的提供商
     Object.entries(oauthConfig).forEach(([key, provider]) => {
       if (provider.enabled) {
         providers.push({
@@ -140,7 +137,6 @@ export class AuthController {
     @Ip() ip: string,
     @Headers('user-agent') userAgent?: string,
   ) {
-    // 输入验证
     if (!loginDto.username?.trim() || !loginDto.password?.trim()) {
       throw new BadRequestException('用户名和密码不能为空');
     }
@@ -151,7 +147,6 @@ export class AuthController {
     );
 
     if (!user) {
-      // 此处故意不返回详细错误，增加安全性
       throw new UnauthorizedException('用户名或密码错误');
     }
 

@@ -10,16 +10,22 @@ const routes = [
     meta: { title: '仪表盘', hideTitle: true } 
   },
   {
-    path: '/auth/callback',
-    name: 'AuthCallback',
-    component: () => import('../views/auth/AuthCallbackView.vue'),
-    meta: { title: '登录回调' }
-  },
-  {
     path: '/profile',
     name: 'Profile',
     component: () => import('../views/user/ProfileView.vue'),
     meta: { title: '个人资料' }
+  },
+  {
+    path: '/services',
+    name: 'Services',
+    component: () => import('../views/services/ServicesView.vue'),
+    meta: { title: '服务' }
+  },
+  {
+    path: '/business',
+    name: 'Business',
+    component: () => import('../views/business/BusinessView.vue'),
+    meta: { title: '业务' }
   },
   {
     path: '/settings',
@@ -28,17 +34,11 @@ const routes = [
     meta: { title: '设置' }
   },
   {
-    path: '/player',
-    name: 'Player',
-    component: () => import('../views/player/PlayerView.vue'),
-    meta: { title: '玩家管理' }
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('../views/auth/AuthCallbackView.vue'),
+    meta: { title: 'SSO 登录' }
   },
-  {
-    path: '/minecraft',
-    name: 'Minecraft',
-    component: () => import('../views/minecraft/MinecraftView.vue'),
-    meta: { title: 'Minecraft 服务器' }
-  }
 ]
 
 const router = createRouter({
@@ -46,22 +46,18 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫 - 移除强制登录，改为初始化认证状态
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
-  // 如果用户未初始化认证状态，且有有效token，先初始化
   if (!authStore.user && authStorage.hasValidTokens()) {
     try {
       await authStore.initAuth()
     } catch (error) {
       console.error('认证初始化失败:', error)
-      // 如果初始化失败，清除无效token
       authStorage.clearTokens()
     }
   }
   
-  // 设置页面标题
   if (to.meta.title) {
     document.title = `${to.meta.title} - Hydroline Services`
   } else {

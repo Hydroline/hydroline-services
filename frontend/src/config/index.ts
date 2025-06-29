@@ -25,14 +25,15 @@ export interface AppConfig {
   }
 }
 
-// 环境变量获取工具
 const getEnv = (key: string, defaultValue?: string): string => {
   return import.meta.env[key] || defaultValue || ''
 }
 
 const getBoolEnv = (key: string, defaultValue = false): boolean => {
-  const value = getEnv(key).toLowerCase()
-  return value === 'true' || value === '1'
+  const value = getEnv(key)
+  if (!value) return defaultValue
+  const lowerValue = value.toLowerCase()
+  return lowerValue === 'true' || lowerValue === '1'
 }
 
 const getArrayEnv = (key: string, defaultValue: string[] = []): string[] => {
@@ -40,7 +41,6 @@ const getArrayEnv = (key: string, defaultValue: string[] = []): string[] => {
   return value ? value.split(',').map(item => item.trim()) : defaultValue
 }
 
-// 应用配置
 export const config: AppConfig = {
   app: {
     title: getEnv('VITE_APP_TITLE', 'Hydroline Services'),
