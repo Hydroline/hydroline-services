@@ -25,7 +25,7 @@ const routes = [
     path: '/business',
     name: 'Business',
     component: () => import('../views/business/BusinessView.vue'),
-    meta: { title: '业务' }
+    meta: { title: '事务' }
   },
   {
     path: '/settings',
