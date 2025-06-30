@@ -60,9 +60,9 @@ import {
 
 const sidebarItems = [
   { path: '/', icon: 'dashboard', label: '仪表板' },
+  { path: '/services', icon: 'videogame_asset', label: '服务' },
+  { path: '/business', icon: 'construction', label: '事务' },
   { path: '/profile', icon: 'person', label: '个人资料' },
-  { path: '/services', icon: 'construction', label: '服务' },
-  { path: '/business', icon: 'videogame_asset', label: '事务' },
   { path: '/settings', icon: 'settings', label: '设置' },
 ]
 

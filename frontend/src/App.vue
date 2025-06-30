@@ -20,7 +20,7 @@ import { Toaster } from '@/components/ui/sonner'
     :toast-options="{
       duration: 4000,
       classes: {
-        toast: 'font-medium !bg-surface-0 !shadow-lg',
+        toast: 'font-medium !bg-surface-0 !shadow-lg !border-1 !border-[var(--border-color-base)]',
         title: 'text-sm',
         description: 'text-xs',
       },
