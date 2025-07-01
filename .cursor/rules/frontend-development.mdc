@@ -1,0 +1,94 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Frontend 开发规则
+
+基于 Vue 3 + TypeScript + Vite 的现代化前端应用开发指南。
+
+## 项目结构 ([src/](mdc:frontend/src/))
+
+```
+src/
+├── api/              # API 接口定义
+├── assets/           # 静态资源 (字体、图片、样式)
+├── components/       # 组件库
+│   ├── auth/         # 认证相关组件
+│   ├── layouts/      # 布局组件
+│   └── ui/           # Shadcn/ui 组件
+├── config/           # 应用配置
+├── lib/              # 工具库 (HTTP 客户端、存储等)
+├── router/           # 路由配置
+├── stores/           # Pinia 状态管理
+└── views/            # 页面组件
+```
+
+## 开发规范
+
+### 组件开发
+- 使用 Vue 3 Composition API
+- 文件命名采用 PascalCase (如 `LoginDialog.vue`)
+- 组件导出使用 [index.ts](mdc:frontend/src/components/auth/index.ts) 统一管理
+- 使用 TypeScript 严格类型检查
+
+### API 管理 ([api/](mdc:frontend/src/api/))
+- API 接口按模块分离：[auth.ts](mdc:frontend/src/api/auth.ts), [user.ts](mdc:frontend/src/api/user.ts), [system.ts](mdc:frontend/src/api/system.ts)
+- 统一使用 HTTP 客户端 ([lib/http.ts](mdc:frontend/src/lib/http.ts))
+- 接口类型定义要完整
+
+### 状态管理 ([stores/](mdc:frontend/src/stores/))
+- 使用 Pinia 进行状态管理
+- 认证状态管理参考 [auth.ts](mdc:frontend/src/stores/auth.ts)
+- 包含权限检查和用户信息管理
+
+### 样式系统
+- 使用 Tailwind CSS 进行样式开发
+- UI 组件基于 Shadcn/ui
+- 自定义样式文件：[tailwind.css](mdc:frontend/src/assets/styles/tailwind.css)
+
+### 工具库 ([lib/](mdc:frontend/src/lib/))
+- HTTP 客户端：[http.ts](mdc:frontend/src/lib/http.ts) - 包含请求拦截、错误处理、认证
+- 本地存储：[storage.ts](mdc:frontend/src/lib/storage.ts) - Token 管理、设置存储
+- 工具函数：[utils.ts](mdc:frontend/src/lib/utils.ts) - 通用工具方法
+
+### 配置管理 ([config/](mdc:frontend/src/config/))
+- 环境变量配置 [index.ts](mdc:frontend/src/config/index.ts)
+- 支持开发/生产环境配置
+- OAuth、SSO 等功能开关配置
+
+## 认证系统
+
+### 登录流程
+1. 支持本地用户名/密码登录
+2. OAuth 第三方登录 (Microsoft, QQ, Discord)
+3. SSO 单点登录支持
+
+### 权限管理
+- 基于 RBAC 的权限控制
+- 权限检查方法：`hasPermission()`, `hasRole()`
+- 路由守卫和组件级权限控制
+
+## 代码规范
+
+### TypeScript
+- 严格模式开启
+- 接口和类型定义要完整
+- 使用泛型提升代码复用性
+
+### Vue 组件
+- 使用 `<script setup>` 语法
+- Props 和 Emits 要有类型定义
+- 使用 Composition API 组织逻辑
+
+### 样式
+- 优先使用 Tailwind CSS 工具类
+- 自定义样式使用 SCSS
+- 响应式设计优先
+
+## 构建和部署
+
+- 开发服务器：`pnpm dev`
+- 生产构建：`pnpm build`
+- 代码检查：`pnpm lint`
+- 自动修复：`pnpm lint:fix`

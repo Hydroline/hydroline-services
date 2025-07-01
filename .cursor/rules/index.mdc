@@ -1,0 +1,90 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Hydroline Services - Cursor 规则索引
+
+欢迎使用 Hydroline Services 项目的 Cursor AI 规则集！这些规则将帮助 AI 更好地理解项目结构、开发规范和最佳实践。
+
+## 规则文件概览
+
+### 1. [project-overview.mdc](mdc:.cursor/rules/project-overview.mdc)
+项目整体概览，包括：
+- 项目结构说明
+- 核心技术栈
+- 主要功能模块
+- 开发规范总览
+
+### 2. [frontend-development.mdc](mdc:.cursor/rules/frontend-development.mdc)
+Vue 3 前端开发规则，包括：
+- 项目结构详解
+- 组件开发规范
+- API 接口管理
+- 状态管理 (Pinia)
+- 样式系统 (Tailwind CSS + Shadcn/ui)
+- 认证和权限管理
+
+### 3. [backend-development.mdc](mdc:.cursor/rules/backend-development.mdc)
+NestJS 后端开发规则，包括：
+- 模块化架构设计
+- 认证系统实现
+- RBAC 权限系统
+- 数据库 (Prisma) 管理
+- API 设计规范
+- 错误处理和验证
+
+### 4. [api-permissions.mdc](mdc:.cursor/rules/api-permissions.mdc)
+API 和权限管理详细规则，包括：
+- 统一响应格式
+- RESTful API 设计
+- RBAC 权限模型
+- 权限命名规范
+- 装饰器使用规范
+- 前后端权限协作
+
+### 5. [development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc)
+开发工作流和最佳实践，包括：
+- Monorepo 工作区管理
+- 代码规范和工具配置
+- Git 工作流
+- 测试策略
+- 构建和部署
+- 性能优化
+
+## 快速导航
+
+### 🏗️ 架构和设计
+- 项目概览 → [project-overview.mdc](mdc:.cursor/rules/project-overview.mdc)
+- 权限系统 → [api-permissions.mdc](mdc:.cursor/rules/api-permissions.mdc)
+
+### 💻 前端开发
+- Vue 3 开发 → [frontend-development.mdc](mdc:.cursor/rules/frontend-development.mdc)
+- 组件库使用 → [frontend-development.mdc](mdc:.cursor/rules/frontend-development.mdc)
+
+### 🔧 后端开发
+- NestJS 架构 → [backend-development.mdc](mdc:.cursor/rules/backend-development.mdc)
+- API 设计 → [api-permissions.mdc](mdc:.cursor/rules/api-permissions.mdc)
+
+### 🚀 开发流程
+- 工作流规范 → [development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc)
+- 代码质量 → [development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc)
+
+## 关键提醒
+
+### 权限系统问题修复 [[memory:2993034354127961960]]
+当前系统存在以下权限问题需要修复：
+1. 种子数据缺失权限
+2. RBAC控制器使用错误权限名称
+3. Auth控制器混用装饰器
+
+详细信息请参考 [api-permissions.mdc](mdc:.cursor/rules/api-permissions.mdc) 中的"已知问题和修复计划"部分。
+
+## 使用建议
+
+1. **新功能开发** - 先查看对应模块的规则文件
+2. **权限相关** - 重点参考 [api-permissions.mdc](mdc:.cursor/rules/api-permissions.mdc)
+3. **代码规范** - 参考 [development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc)
+4. **架构理解** - 从 [project-overview.mdc](mdc:.cursor/rules/project-overview.mdc) 开始
+
+这些规则将帮助 AI 更好地理解项目结构，提供更准确的代码建议和问题解决方案。

@@ -1,0 +1,254 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 开发工作流规则
+
+Hydroline Services 项目的开发工作流、代码规范和最佳实践指南。
+
+## 工作区结构
+
+项目采用 monorepo 架构，使用 [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml) 管理：
+
+```yaml
+packages:
+  - 'frontend'
+  - 'backend'
+  - 'admin'
+  - 'sso'
+```
+
+## 开发环境
+
+### 前置要求
+- Node.js >= 18
+- pnpm >= 8
+- PostgreSQL >= 14
+- Redis (可选)
+
+### 项目启动
+```bash
+# 安装依赖
+pnpm install
+
+# 前端开发
+cd frontend && pnpm dev
+
+# 后端开发
+cd backend && pnpm start:dev
+
+# 数据库迁移
+cd backend && npx prisma migrate dev
+```
+
+## 代码规范
+
+### TypeScript 配置
+- 前端：[tsconfig.json](mdc:frontend/tsconfig.json)
+- 后端：[tsconfig.json](mdc:backend/tsconfig.json)
+- 严格模式启用
+- 路径别名配置
+
+### ESLint 配置
+- 前端：[eslint.config.ts](mdc:frontend/eslint.config.ts)
+- 后端：[eslint.config.mjs](mdc:backend/eslint.config.mjs)
+- TypeScript 规则
+- Vue 特定规则
+- NestJS 特定规则
+
+### Prettier 配置
+统一代码格式化：[.prettierrc](mdc:frontend/.prettierrc)
+```json
+{
+  "semi": false,
+  "tabWidth": 2,
+  "useTabs": false,
+  "singleQuote": true
+}
+```
+
+## Git 工作流
+
+### 分支策略
+- `main` - 主分支，稳定版本
+- `develop` - 开发分支
+- `feature/*` - 功能分支
+- `bugfix/*` - 修复分支
+- `hotfix/*` - 热修复分支
+
+### 提交规范
+使用 Conventional Commits：
+```
+feat: 新功能
+fix: 修复问题
+docs: 文档更新
+style: 代码格式
+refactor: 重构
+test: 测试相关
+chore: 构建/工具链
+```
+
+## 文档管理 ([docs/](mdc:docs))
+
+### 架构文档
+- [ARCHITECTURE-DESIGN.md](mdc:docs/backend/ARCHITECTURE-DESIGN.md) - 后端架构设计
+- [RBAC-PERMISSIONS.md](mdc:docs/backend/RBAC-PERMISSIONS.md) - 权限系统设计
+
+### 项目文档
+- [Plan.md](mdc:docs/main/Plan.md) - 项目计划
+- [Prompt.md](mdc:docs/main/Prompt.md) - 开发提示
+
+### README 文档
+- 根目录：[README.md](mdc:README.md)
+- 前端：[README.md](mdc:frontend/README.md)
+- 后端：[README.md](mdc:backend/README.md)
+
+## 测试策略
+
+### 前端测试
+- Vitest 单元测试
+- Vue Test Utils 组件测试
+- 配置：[vitest.config.ts](mdc:frontend/vite.config.ts)
+
+### 后端测试
+- Jest 单元测试
+- 配置：[jest.config.ts](mdc:backend/jest.config.ts)
+- 测试示例：[minecraft utils](mdc:backend/src/common/utils/minecraft)
+
+### 测试命令
+```bash
+# 前端测试
+cd frontend && pnpm test
+
+# 后端测试
+cd backend && npm run test
+```
+
+## 构建和部署
+
+### 开发环境
+```bash
+# 前端热重载
+pnpm dev
+
+# 后端热重载
+pnpm start:dev
+```
+
+### 生产构建
+```bash
+# 前端构建
+cd frontend && pnpm build
+
+# 后端构建
+cd backend && npm run build
+```
+
+### 环境变量
+- 前端：`.env` 文件，变量以 `VITE_` 开头
+- 后端：`.env` 文件，包含数据库连接等配置
+
+## 代码质量
+
+### 静态检查
+```bash
+# ESLint 检查
+pnpm lint
+
+# 类型检查
+pnpm type-check
+
+# 自动修复
+pnpm lint:fix
+```
+
+### 代码格式化
+```bash
+# Prettier 格式化
+pnpm format
+```
+
+## 依赖管理
+
+### 包管理器
+- 统一使用 pnpm
+- 工作区依赖共享
+- 版本锁定 ([pnpm-lock.yaml](mdc:pnpm-lock.yaml))
+
+### 依赖更新
+```bash
+# 检查过期依赖
+pnpm outdated
+
+# 更新依赖
+pnpm update
+```
+
+## 开发最佳实践
+
+### 组件开发
+1. **单一职责原则** - 每个组件只负责一个功能
+2. **Props 类型定义** - 使用 TypeScript 接口
+3. **事件命名** - 使用动词+名词格式
+4. **样式隔离** - 使用 scoped 样式或 CSS Modules
+
+### API 开发
+1. **RESTful 设计** - 遵循 REST 规范
+2. **DTO 验证** - 使用 class-validator
+3. **错误处理** - 统一错误响应格式
+4. **文档生成** - 使用 Swagger 自动生成
+
+### 数据库操作
+1. **Prisma 最佳实践** - 使用类型安全的查询
+2. **迁移管理** - 使用 Prisma migrate
+3. **种子数据** - [seed.ts](mdc:backend/prisma/seed.ts) 管理初始数据
+
+### 安全考虑
+1. **权限验证** - 每个 API 都要有权限检查
+2. **输入验证** - 严格验证用户输入
+3. **SQL 注入防护** - 使用 Prisma ORM
+4. **XSS 防护** - 前端输入过滤
+
+## 性能优化
+
+### 前端优化
+- 代码分割和懒加载
+- 图片优化和压缩
+- 缓存策略
+- Bundle 大小监控
+
+### 后端优化
+- 数据库查询优化
+- 缓存策略 (Redis)
+- API 响应压缩
+- 连接池管理
+
+## 调试技巧
+
+### 前端调试
+- Vue DevTools
+- Chrome DevTools
+- 网络请求监控
+- 状态管理调试
+
+### 后端调试
+- NestJS Logger
+- 数据库查询日志
+- API 性能监控
+- 错误堆栈跟踪
+
+## 部署注意事项
+
+### 环境配置
+- 开发、测试、生产环境分离
+- 环境变量管理
+- 数据库连接配置
+- 静态资源 CDN
+
+### 监控和日志
+- 应用性能监控
+- 错误日志收集
+- 用户行为分析
+- 系统资源监控
+

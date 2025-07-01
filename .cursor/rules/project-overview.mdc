@@ -1,0 +1,51 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Hydroline Services 项目概览
+
+Hydroline Services 是一个现代化的全栈项目，包含前端、后端和文档三个主要部分。
+
+## 项目结构
+
+- **frontend/** - Vue 3 + TypeScript 前端应用
+- **backend/** - NestJS + Prisma 后端API服务
+- **docs/** - 项目文档和设计文档
+- **sso/** - 单点登录相关配置
+- **admin/** - 管理相关文件
+
+## 核心技术栈
+
+### 前端 ([package.json](mdc:frontend/package.json))
+- Vue 3 + Composition API
+- TypeScript
+- Vite 构建工具
+- Tailwind CSS + Shadcn/ui 组件库
+- Pinia 状态管理
+- Vue Router 路由管理
+- Axios HTTP 客户端
+
+### 后端 ([package.json](mdc:backend/package.json))
+- NestJS 框架
+- TypeScript
+- Prisma ORM ([schema.prisma](mdc:backend/prisma/schema.prisma))
+- PostgreSQL 数据库
+- JWT 认证
+- RBAC 权限系统
+
+## 主要功能模块
+
+1. **认证系统** - 支持本地登录、OAuth、SSO
+2. **用户管理** - 用户资料、角色权限
+3. **玩家管理** - Minecraft 相关功能
+4. **审计日志** - 操作记录和追踪
+5. **系统管理** - 配置和监控
+
+## 开发规范
+
+- 统一使用 TypeScript
+- ESLint + Prettier 代码规范
+- 模块化架构设计
+- API 接口统一封装
+- 权限控制基于 RBAC 模型

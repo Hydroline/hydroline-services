@@ -1,0 +1,131 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Backend 开发规则
+
+基于 NestJS + TypeScript + Prisma 的后端 API 服务开发指南。
+
+## 项目结构 ([src/](mdc:backend/src))
+
+```
+src/
+├── modules/          # 功能模块
+│   ├── core/         # 核心模块 (认证等)
+│   ├── rbac/         # 权限管理模块
+│   ├── player/       # 玩家管理模块
+│   ├── minecraft/    # Minecraft 服务
+│   ├── audit/        # 审计日志模块
+│   └── prisma/       # 数据库服务
+├── common/           # 公共组件
+│   ├── decorators/   # 装饰器
+│   ├── dto/          # 数据传输对象
+│   ├── filters/      # 异常过滤器
+│   ├── guards/       # 守卫
+│   ├── interceptors/ # 拦截器
+│   └── utils/        # 工具函数
+├── adapter/          # 适配器
+├── config.ts         # 配置管理
+└── main.ts           # 应用入口
+```
+
+## 核心模块
+
+### 认证系统 ([modules/core/auth/](mdc:backend/src/modules/core/auth))
+- **控制器**: [auth.controller.ts](mdc:backend/src/modules/core/auth/auth.controller.ts)
+- **服务**: [auth.service.ts](mdc:backend/src/modules/core/auth/auth.service.ts)
+- **策略**: [jwt.strategy.ts](mdc:backend/src/modules/core/auth/jwt.strategy.ts), [oauth.strategy.ts](mdc:backend/src/modules/core/auth/oauth.strategy.ts)
+- **SSO服务**: [sso.service.ts](mdc:backend/src/modules/core/auth/sso.service.ts)
+
+### RBAC 权限系统 ([modules/rbac/](mdc:backend/src/modules/rbac))
+- **权限管理**: [permission.controller.ts](mdc:backend/src/modules/rbac/permission.controller.ts)
+- **角色管理**: [role.controller.ts](mdc:backend/src/modules/rbac/role.controller.ts)
+- **权限守卫**: [rbac.guard.ts](mdc:backend/src/common/guards/rbac.guard.ts)
+
+### 数据库 ([prisma/](mdc:backend/prisma))
+- **Schema**: [schema.prisma](mdc:backend/prisma/schema.prisma)
+- **种子数据**: [seed.ts](mdc:backend/prisma/seed.ts)
+- **服务**: [prisma.service.ts](mdc:backend/src/modules/prisma/prisma.service.ts)
+
+## 开发规范
+
+### 模块架构
+每个功能模块包含：
+- `*.module.ts` - 模块定义
+- `*.controller.ts` - 控制器 (API 路由)
+- `*.service.ts` - 业务逻辑服务
+- `dto/` - 数据传输对象
+- 测试文件
+
+### 装饰器 ([common/decorators/](mdc:backend/src/common/decorators))
+- `@Auth()` - 认证装饰器 ([auth.decorator.ts](mdc:backend/src/common/decorators/auth.decorator.ts))
+- `@ApiResponse()` - API 响应装饰器 ([api-response.decorator.ts](mdc:backend/src/common/decorators/api-response.decorator.ts))
+- `@SuccessMessage()` - 成功消息装饰器 ([success-message.decorator.ts](mdc:backend/src/common/decorators/success-message.decorator.ts))
+
+### 权限控制
+- 使用 `@Permissions()` 装饰器进行权限控制
+- 避免混用 `@Roles()` 装饰器
+- 权限检查基于数据库中的权限记录
+
+### API 设计
+- 统一的响应格式 ([response.dto.ts](mdc:backend/src/common/dto/response.dto.ts))
+- RESTful API 设计原则
+- 完整的 DTO 类型定义
+- Swagger 文档自动生成
+
+### 错误处理
+- 全局异常过滤器 ([http-exception.filter.ts](mdc:backend/src/common/filters/http-exception.filter.ts))
+- 统一错误响应格式
+- 适当的 HTTP 状态码
+
+### 数据验证
+- 使用 class-validator 进行 DTO 验证
+- 管道验证和转换
+- 类型安全的数据处理
+
+## 权限系统设计
+
+### 权限模型
+基于 RBAC (Role-Based Access Control) 模型：
+- **用户 (User)** - 系统用户
+- **角色 (Role)** - 用户角色
+- **权限 (Permission)** - 具体操作权限
+- **用户-角色关系** - 多对多关系
+- **角色-权限关系** - 多对多关系
+
+### 权限命名规范
+```
+模块:操作 (如: user:read, user:write, rbac:assign)
+```
+
+### 已知问题修复 (基于内存)
+1. **种子数据缺失权限**：
+   - permission:read, permission:write, permission:delete, permission:admin
+   - role:delete, role:assign
+
+2. **RBAC控制器权限修正**：
+   - 将 rbac:read, rbac:write, rbac:delete, rbac:assign
+   - 修正为数据库中存在的权限名称
+
+3. **Auth控制器装饰器统一**：
+   - 统一使用 @Permissions 装饰器
+   - 移除混用的 @Roles 装饰器
+
+## 配置管理 ([config.ts](mdc:backend/src/config.ts))
+- 环境变量配置
+- 数据库连接配置
+- JWT 配置
+- OAuth 提供商配置
+
+## 测试
+- 单元测试配置 ([jest.config.ts](mdc:backend/jest.config.ts))
+- 测试工具类 ([utils/minecraft/](mdc:backend/src/common/utils/minecraft))
+- API 端到端测试
+
+## 构建和部署
+- 开发启动：`npm run start:dev`
+- 生产构建：`npm run build`
+- 数据库迁移：`npx prisma migrate`
+- 代码检查：`npm run lint`
+

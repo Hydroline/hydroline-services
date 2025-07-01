@@ -1,0 +1,195 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# API 和权限管理规则
+
+详细的 API 设计规范和 RBAC 权限系统实现指南。
+
+## API 设计规范
+
+### 统一响应格式
+所有 API 响应遵循统一格式 ([response.dto.ts](mdc:backend/src/common/dto/response.dto.ts))：
+
+```typescript
+{
+  code: number,
+  status: string,
+  message: string,
+  data: T,
+  timestamp: number,
+  isoTime: string
+}
+```
+
+### HTTP 状态码规范
+- `200` - 成功
+- `201` - 创建成功
+- `204` - 删除成功
+- `400` - 请求参数错误
+- `401` - 未认证
+- `403` - 权限不足
+- `404` - 资源未找到
+- `500` - 服务器错误
+
+### RESTful API 设计
+- GET `/api/{resource}` - 获取资源列表
+- GET `/api/{resource}/{id}` - 获取单个资源
+- POST `/api/{resource}` - 创建资源
+- PUT `/api/{resource}/{id}` - 更新资源
+- PATCH `/api/{resource}/{id}` - 部分更新
+- DELETE `/api/{resource}/{id}` - 删除资源
+
+## RBAC 权限系统
+
+### 权限模型设计 ([RBAC-PERMISSIONS.md](mdc:docs/backend/RBAC-PERMISSIONS.md))
+
+```
+用户 (User) ←→ 角色 (Role) ←→ 权限 (Permission)
+```
+
+### 权限命名规范
+采用 `模块:操作` 格式：
+- `user:read` - 用户查看权限
+- `user:write` - 用户编辑权限
+- `user:delete` - 用户删除权限
+- `permission:admin` - 权限管理权限
+- `role:assign` - 角色分配权限
+
+### 核心权限列表
+
+#### 用户管理权限
+- `user:read` - 查看用户信息
+- `user:write` - 编辑用户信息
+- `user:delete` - 删除用户
+- `user:admin` - 用户管理权限
+
+#### 权限管理权限
+- `permission:read` - 查看权限
+- `permission:write` - 编辑权限
+- `permission:delete` - 删除权限
+- `permission:admin` - 权限管理
+
+#### 角色管理权限
+- `role:read` - 查看角色
+- `role:write` - 编辑角色
+- `role:delete` - 删除角色
+- `role:assign` - 分配角色
+
+#### 玩家管理权限
+- `player:read` - 查看玩家信息
+- `player:write` - 编辑玩家信息
+- `player:delete` - 删除玩家
+
+#### 审计权限
+- `audit:read` - 查看审计日志
+
+### 权限装饰器使用
+
+#### 认证装饰器 ([auth.decorator.ts](mdc:backend/src/common/decorators/auth.decorator.ts))
+```typescript
+@Auth('permission:read') // 需要特定权限
+@Auth() // 仅需要登录
+```
+
+#### 避免的错误用法
+- ❌ 不要混用 `@Roles()` 装饰器
+- ❌ 不要使用不存在的权限名称 (如 rbac:read)
+- ✅ 统一使用 `@Permissions()` 装饰器
+- ✅ 使用数据库中存在的权限名称
+
+### 权限守卫 ([rbac.guard.ts](mdc:backend/src/common/guards/rbac.guard.ts))
+- 自动验证用户权限
+- 支持多权限组合
+- 与 JWT 认证集成
+
+## API 模块设计
+
+### 认证模块 ([auth/](mdc:backend/src/modules/core/auth/))
+
+#### 端点设计
+- `POST /api/auth/login` - 用户登录
+- `POST /api/auth/register` - 用户注册
+- `POST /api/auth/refresh` - 刷新Token
+- `POST /api/auth/logout` - 用户登出
+- `GET /api/auth/profile` - 获取用户信息
+- `POST /api/auth/change-password` - 修改密码
+
+#### OAuth 支持
+- `GET /api/auth/oauth/providers` - 获取OAuth提供商
+- `GET /api/auth/oauth/{provider}` - OAuth登录
+- `GET /api/auth/oauth/{provider}/callback` - OAuth回调
+
+#### SSO 支持
+- `GET /api/auth/sso/{system}` - SSO登录
+
+### RBAC 模块 ([rbac/](mdc:backend/src/modules/rbac/))
+
+#### 权限管理 ([permission.controller.ts](mdc:backend/src/modules/rbac/permission.controller.ts))
+- `GET /api/permissions` - 获取权限列表 (`permission:read`)
+- `POST /api/permissions` - 创建权限 (`permission:write`)
+- `GET /api/permissions/{id}` - 获取单个权限 (`permission:read`)
+- `PUT /api/permissions/{id}` - 更新权限 (`permission:write`)
+- `DELETE /api/permissions/{id}` - 删除权限 (`permission:delete`)
+
+#### 角色管理 ([role.controller.ts](mdc:backend/src/modules/rbac/role.controller.ts))
+- `GET /api/roles` - 获取角色列表 (`role:read`)
+- `POST /api/roles` - 创建角色 (`role:write`)
+- `GET /api/roles/{id}` - 获取单个角色 (`role:read`)
+- `PUT /api/roles/{id}` - 更新角色 (`role:write`)
+- `DELETE /api/roles/{id}` - 删除角色 (`role:delete`)
+- `POST /api/roles/{id}/assign` - 分配角色 (`role:assign`)
+
+### 数据传输对象 (DTO)
+
+#### 查询 DTO
+- 分页参数：`page`, `limit`
+- 排序参数：`sortBy`, `sortOrder`
+- 过滤参数：`filters`
+
+#### 响应 DTO
+- 统一的响应包装
+- 分页信息包含
+- 错误信息标准化
+
+## 前后端协作
+
+### API 接口对接 ([frontend/src/api/](mdc:frontend/src/api/))
+- 认证接口：[auth.ts](mdc:frontend/src/api/auth.ts)
+- 用户接口：[user.ts](mdc:frontend/src/api/user.ts)
+- 系统接口：[system.ts](mdc:frontend/src/api/system.ts)
+
+### 权限检查
+前端权限检查：
+```typescript
+const authStore = useAuthStore()
+authStore.hasPermission('permission:read')
+authStore.hasRole('admin')
+```
+
+后端权限控制：
+```typescript
+@Auth('permission:read')
+@Get()
+async getPermissions() {
+  // ...
+}
+```
+
+## 已知问题和修复计划
+
+### 权限数据缺失 (内存提到)
+需要在种子数据 ([seed.ts](mdc:backend/prisma/seed.ts)) 中添加：
+1. `permission:read`, `permission:write`, `permission:delete`, `permission:admin`
+2. `role:delete`, `role:assign`
+
+### RBAC控制器权限修正
+将以下权限名称修正：
+- `rbac:read` → `permission:read` 或 `role:read`
+- `rbac:write` → `permission:write` 或 `role:write`
+- `rbac:delete` → `permission:delete` 或 `role:delete`
+- `rbac:assign` → `role:assign`
+
+### Auth控制器装饰器统一
+统一使用 `@Permissions()` 装饰器，移除 `@Roles()` 装饰器的混用。
